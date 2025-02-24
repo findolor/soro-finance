@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use((req, res, next) => {
   logger.info({
+    type: 'request',
     method: req.method,
     path: req.path,
     ip: req.ip
