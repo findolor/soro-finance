@@ -3,7 +3,7 @@
 ## 1️⃣ Project Setup & Environment  
 - [x] Set up **Bun** as the runtime  
 - [x] Initialize **Express** server  
-- [ ] Configure **PrismaORM** with SQLite  
+- [x] Configure **PrismaORM** with SQLite  
 - [x] Define **.env** for config variables (DB path, API keys, etc.)  
 - [ ] Set up **Node Cron** for scheduled tasks  
 
@@ -18,7 +18,7 @@
 ---
 
 ## 2️⃣ Database Schema & Models (Prisma)  
-- [ ] **Users & Roles** (id, name, wallet, role, etc.)  
+- [x] **Users & Roles** (id, name, wallet, role, etc.)  
 - [ ] **Projects** (id, name, description, team members)  
 - [ ] **Payment Rules** (recipient, amount, schedule, token type)  
 - [ ] **Income & Expenses** (amount, category, timestamp)  
