@@ -33,8 +33,11 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
   // Log unexpected errors
   logger.error({
-    message: err.message,
-    stack: err.stack
+    message: 'Unexpected error',
+    data: {
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined
+    }
   });
 
   // Don't leak error details in production

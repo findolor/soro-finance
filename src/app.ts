@@ -9,7 +9,6 @@ const app = express();
 
 // Initialize cron jobs
 startTestCron();
-logger.info('Cron jobs initialized');
 
 // Middleware
 app.use(helmet());
