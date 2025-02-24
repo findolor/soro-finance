@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { errorHandler } from './api/middlewares/error.middleware';
 import logger from './utils/logger';
 import { startTestCron } from './jobs/testCron';
+import authRoutes from './api/routes/auth.routes';
 
 const app = express();
 
@@ -38,7 +39,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// API Routes will be added here
+// API Routes
+app.use('/api/v1/auth', authRoutes);
 // app.use('/api/v1/users', userRoutes);
 // app.use('/api/v1/projects', projectRoutes);
 // app.use('/api/v1/expenses', expenseRoutes);

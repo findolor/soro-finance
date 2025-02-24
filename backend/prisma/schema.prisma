@@ -14,15 +14,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name      String
-  email     String   @unique
-  walletAddress String?
-  role      Role     @default(USER)
-  isActive  Boolean  @default(true)
+  id                    String    @id @default(uuid())
+  publicKey             String    @unique @default(uuid())
+  refreshToken          String?
+  refreshTokenExpiresAt DateTime?
+  lastLoginAt           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  role                  Role      @default(USER)
 }
 
 enum Role {
