@@ -5,7 +5,7 @@
 - [x] Initialize **Express** server  
 - [x] Configure **PrismaORM** with SQLite  
 - [x] Define **.env** for config variables (DB path, API keys, etc.)  
-- [ ] Set up **Node Cron** for scheduled tasks  
+- [x] Set up **Node Cron** for scheduled tasks  
 
 ### ✅ **Security & Utility Features**  
 - [x] Basic server security (helmet, cors)

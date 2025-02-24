@@ -3,8 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { errorHandler } from './api/middlewares/error.middleware';
 import logger from './utils/logger';
+import { startTestCron } from './jobs/testCron';
 
 const app = express();
+
+// Initialize cron jobs
+startTestCron();
+logger.info('Cron jobs initialized');
 
 // Middleware
 app.use(helmet());
