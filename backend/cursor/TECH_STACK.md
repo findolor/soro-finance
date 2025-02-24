@@ -5,6 +5,7 @@
 - PrismaORM
 - SQLite
 - Node cron
+- UUID for request tracking
 
 ## File Structure
 
@@ -46,6 +47,9 @@ backend/
 │   ├── models/               # Prisma models and types
 │   │   └── index.ts
 │   │
+│   ├── types/                # Global type definitions
+│   │   └── express.d.ts      # Express type extensions
+│   │
 │   ├── utils/                # Utility functions
 │   │   ├── logger.ts
 │   │   ├── errors.ts
@@ -81,10 +85,12 @@ backend/
 7. **Error Handling**: Centralized error handling and logging
 8. **Configuration Management**: Environment-based configuration
 9. **Code Quality**: Enforced through ESLint and Prettier
+10. **Request Tracing**: UUID-based request tracking across the application
 
 ## Monitoring and Logging
 - Winston for logging
-- Error tracking
+- Request ID tracking with UUID
+- Error tracking with request correlation
 - Performance monitoring
 - Database query monitoring
 - Cron job monitoring

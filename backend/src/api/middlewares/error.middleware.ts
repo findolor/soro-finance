@@ -21,7 +21,8 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     logger.warn({
       message: err.message,
       statusCode: err.statusCode,
-      stack: err.stack
+      stack: err.stack,
+      requestId: req.requestId
     });
 
     res.status(err.statusCode).json({
@@ -36,7 +37,8 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message: 'Unexpected error',
     data: {
       message: err instanceof Error ? err.message : String(err),
-      stack: err instanceof Error ? err.stack : undefined
+      stack: err instanceof Error ? err.stack : undefined,
+      requestId: req.requestId
     }
   });
 

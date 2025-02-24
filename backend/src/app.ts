@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { v4 as uuidv4 } from 'uuid';
 import { errorHandler } from './api/middlewares/error.middleware';
 import logger from './utils/logger';
 import { startTestCron } from './jobs/testCron';
@@ -18,8 +19,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Request logging
 app.use((req, res, next) => {
+  const requestId = uuidv4();
+  // Attach requestId to the request object for potential use in other middlewares
+  req.requestId = requestId;
+  
   logger.info({
     type: 'request',
+    requestId,
     method: req.method,
     path: req.path,
     ip: req.ip
