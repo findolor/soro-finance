@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import logger from '../../utils/logger';
 
 export class AppError extends Error {
@@ -16,12 +16,7 @@ export class AppError extends Error {
   }
 }
 
-export const errorHandler = (
-  err: Error | AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof AppError) {
     logger.warn({
       message: err.message,
@@ -29,10 +24,11 @@ export const errorHandler = (
       stack: err.stack
     });
 
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       status: err.status,
       message: err.message
     });
+    return;
   }
 
   // Log unexpected errors
@@ -46,7 +42,7 @@ export const errorHandler = (
     ? 'Something went wrong'
     : err.message;
 
-  return res.status(500).json({
+  res.status(500).json({
     status: 'error',
     message
   });
