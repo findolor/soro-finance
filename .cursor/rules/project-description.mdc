@@ -1,0 +1,17 @@
+---
+description: This is the description for the project. It outlines the features.
+globs: 
+---
+# Project Description
+
+Soro Finance is a accounting and payment automation platform designed for decentralized teams. It helps projects track their income and expenses, manage recurring payments, and automate on-chain and off-chain transactions.
+
+## Key features include:
+
+Expense & Income Tracking with reporting capabilities
+Automated & Manual Payments via predefined rules
+Token Conversions for seamless treasury management
+Expense Requests & Approvals for team-based operations
+Comprehensive Reporting & Data Export
+
+Soro Finance aims to simplify financial management for blockchain-based projects, ensuring transparency, automation, and efficient fund distribution.

@@ -1,0 +1,11 @@
+---
+description: This rule outlines the rules for any development being done on the project.
+globs: 
+---
+These are all the important rules that you must follow before developing anything for this project.
+
+1. Check [project-description.mdc](mdc:.cursor/rules/project-description.mdc) to see what we are building and why, this will give you enough context while you are working on development.
+
+2. Before starting out development, always check [tech-stack.mdc](mdc:.cursor/rules/tech-stack.mdc) to see which technologies we are using.
+
+3. When working on a project, always check the checklist [checklist.mdc](mdc:.cursor/rules/checklist.mdc) to see our current progress.

@@ -1,0 +1,12 @@
+---
+description: This is the central place to find all the checklist files in the repository.
+globs: 
+---
+# Important
+
+- Always look at the checklist before implementing anything to see where we are at.
+- Always update the relevant checklist if the feature you are working on is done.
+
+## Files
+
+- Backend checklist document can be found in [CHECKLIST.md](mdc:backend/cursor/CHECKLIST.md)

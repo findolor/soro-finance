@@ -1,0 +1,6 @@
+---
+description: This is the central place to find all the tech stack files in the repository.
+globs: 
+---
+- Backend tech stack document can be found in [TECH_STACK.md](mdc:backend/cursor/TECH_STACK.md)
+
