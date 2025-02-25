@@ -1,6 +1,7 @@
 ---
 description: This rule outlines the rules for any development being done on the project.
 globs: 
+alwaysApply: true
 ---
 These are all the important rules that you must follow before developing anything for this project.
 
