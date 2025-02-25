@@ -477,7 +477,7 @@ const MainPage = () => {
               ].map((feature, i) => (
                 <div 
                   key={i} 
-                  className="rounded-xl p-4 md:p-6 border border-[#f7ebe9]/20 transform-gpu hover:scale-[1.05] md:hover:scale-[1.05] hover:border-[#f7ebe9]/30 shadow-lg relative overflow-hidden bg-white/[0.02]"
+                  className="rounded-xl p-4 md:p-6 border border-[#f7ebe9]/20 transform-gpu hover:scale-[1.05] md:hover:scale-[1.05] hover:border-[#f7ebe9]/30 shadow-lg relative overflow-hidden bg-white/[0.1]"
                   style={{
                     animation: !isMobile ? `
                       float${i + 1} ${CONFIG.FLOAT.DURATION} ease-in-out infinite,
