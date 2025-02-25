@@ -10,3 +10,8 @@ These are all the important rules that you must follow before developing anythin
 2. Before starting out development, always check [tech-stack.mdc](mdc:.cursor/rules/tech-stack.mdc) to see which technologies we are using.
 
 3. When working on a project, always check the checklist [checklist.mdc](mdc:.cursor/rules/checklist.mdc) to see our current progress.
+
+# Working Directories
+
+- Backend project is under /backend
+- Frontend project is under /frontend
