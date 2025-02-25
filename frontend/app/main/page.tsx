@@ -24,6 +24,16 @@ const MainPage = () => {
       DURATION: '8s',
       DISTANCE: '2px',
       TILT: '0.5deg',
+    },
+    GLOW: {
+      PRIMARY_COLOR: '#ae5042',
+      SECONDARY_COLOR: '#296b44',
+      ACCENT_COLOR: '#378090',
+      INTENSITY: '4px',
+      PULSE_DURATION: '6s',
+    },
+    HOVER: {
+      DURATION: '800ms', // Slower hover transition duration
     }
   };
   
@@ -63,6 +73,21 @@ const MainPage = () => {
       0% { transform: translateX(-${CONFIG.BUTTON.DISTANCE}) rotate(-${CONFIG.BUTTON.TILT}); }
       50% { transform: translateX(${CONFIG.BUTTON.DISTANCE}) rotate(${CONFIG.BUTTON.TILT}); }
       100% { transform: translateX(-${CONFIG.BUTTON.DISTANCE}) rotate(-${CONFIG.BUTTON.TILT}); }
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px ${CONFIG.GLOW.PRIMARY_COLOR}40, 0 0 10px ${CONFIG.GLOW.PRIMARY_COLOR}20; }
+      50% { box-shadow: 0 0 15px ${CONFIG.GLOW.PRIMARY_COLOR}60, 0 0 20px ${CONFIG.GLOW.PRIMARY_COLOR}30; }
+      100% { box-shadow: 0 0 5px ${CONFIG.GLOW.PRIMARY_COLOR}40, 0 0 10px ${CONFIG.GLOW.PRIMARY_COLOR}20; }
+    }
+    @keyframes textGlow {
+      0% { text-shadow: 0 0 5px ${CONFIG.GLOW.PRIMARY_COLOR}40; }
+      50% { text-shadow: 0 0 10px ${CONFIG.GLOW.PRIMARY_COLOR}60, 0 0 15px ${CONFIG.GLOW.PRIMARY_COLOR}30; }
+      100% { text-shadow: 0 0 5px ${CONFIG.GLOW.PRIMARY_COLOR}40; }
+    }
+    @keyframes borderGlow {
+      0% { box-shadow: 0 0 5px ${CONFIG.GLOW.SECONDARY_COLOR}40, inset 0 0 3px ${CONFIG.GLOW.SECONDARY_COLOR}20; }
+      50% { box-shadow: 0 0 10px ${CONFIG.GLOW.SECONDARY_COLOR}60, inset 0 0 5px ${CONFIG.GLOW.SECONDARY_COLOR}30; }
+      100% { box-shadow: 0 0 5px ${CONFIG.GLOW.SECONDARY_COLOR}40, inset 0 0 3px ${CONFIG.GLOW.SECONDARY_COLOR}20; }
     }
   `;
   
@@ -147,6 +172,8 @@ const MainPage = () => {
             ` : 'none',
             transition: `transform ${CONFIG.TILT.TRANSITION_SPEED} ease-out`,
             transformStyle: 'preserve-3d',
+            boxShadow: `0 0 ${CONFIG.GLOW.INTENSITY} ${CONFIG.GLOW.SECONDARY_COLOR}30, inset 0 0 20px ${CONFIG.GLOW.SECONDARY_COLOR}10`,
+            animation: `pulseGlow ${CONFIG.GLOW.PULSE_DURATION} ease-in-out infinite`
           }}
         >
           <div 
@@ -157,15 +184,26 @@ const MainPage = () => {
             }}
           />
           <div 
-            className="flex flex-col min-h-[500px] md:h-[calc(100vh-8rem)] justify-center relative"
+            className="flex flex-col min-h-[500px] md:h-[calc(100vh-8rem)] justify-center relative "
           >
             <div className="absolute inset-0 bg-[url('/images/abstract-bg.png')] opacity-5 bg-cover bg-center"></div>
             
             {/* Hero Content */}
             <div className="z-10 text-center px-2 md:px-4 mb-8 md:mb-12">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[80px] font-bold text-[#f7ebe9] mb-2 md:mb-4">SoroFinance</h1>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-medium mb-6 md:mb-10 text-[#f7ebe9]">Smart Accounting & Payments<br className="hidden sm:block"/>for Stellar Projects</h2>
-              <p className="text-base md:text-xl mb-6 md:mb-8 text-[#f7ebe9]/80 px-2">
+              <h1 
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-[80px] font-bold text-[#f7ebe9] mb-2 md:mb-4"
+                style={{
+                  textShadow: `0 0 10px ${CONFIG.GLOW.PRIMARY_COLOR}40, 0 0 20px ${CONFIG.GLOW.PRIMARY_COLOR}20`,
+                  animation: `textGlow ${CONFIG.GLOW.PULSE_DURATION} ease-in-out infinite`
+                }}
+              >SoroFinance</h1>
+              <h2 
+                className="text-xl sm:text-2xl md:text-3xl font-medium mb-6 md:mb-16 text-[#f7ebe9]"
+                style={{
+                  textShadow: `0 0 5px ${CONFIG.GLOW.SECONDARY_COLOR}30`
+                }}
+              >Smart Accounting & Payments<br className="hidden sm:block"/>for Stellar Projects</h2>
+              <p className="text-base md:text-xl mb-6 md:mb-10 text-[#f7ebe9]/80 px-2">
                 A structured way to manage your project&apos;s finances, automate payments,<br className="hidden md:block"/>and streamline SCF applications.
               </p>
               
@@ -174,9 +212,11 @@ const MainPage = () => {
                   href="https://forms.gle/PiXrFdKPPFoRqwXp9"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#ae5042] text-[#f7ebe9] px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold hover:bg-[#378090] transition-colors text-sm sm:text-base cursor-pointer transform-gpu"
+                  className="bg-[#ae5042] text-[#f7ebe9] px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold hover:bg-[#378090] text-sm sm:text-base cursor-pointer transform-gpu"
                   style={{
                     animation: !isMobile ? `buttonMove ${CONFIG.BUTTON.DURATION} ease-in-out infinite` : 'none',
+                    boxShadow: `0 0 10px ${CONFIG.GLOW.PRIMARY_COLOR}60, 0 0 20px ${CONFIG.GLOW.PRIMARY_COLOR}30`,
+                    transition: 'background-color 0.3s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease-in-out'
                   }}
                 >
                   Give feedback
@@ -205,20 +245,28 @@ const MainPage = () => {
               ].map((feature, i) => (
                 <div 
                   key={i} 
-                  className="bg-[#ffffff]/5 rounded-xl p-4 md:p-6 backdrop-blur-xl border border-[#f7ebe9]/20 transform-gpu hover:scale-105 md:hover:scale-110 transition-all duration-300 hover:bg-[#ffffff]/10 hover:border-[#f7ebe9]/30 shadow-lg relative overflow-hidden"
+                  className="bg-[#ffffff]/5 rounded-xl p-4 md:p-6 backdrop-blur-xl border border-[#f7ebe9]/20 transform-gpu hover:scale-[1.05] md:hover:scale-[1.05] hover:bg-[#ffffff]/10 hover:border-[#f7ebe9]/30 shadow-lg relative overflow-hidden"
                   style={{
                     animation: !isMobile ? `
                       float${i + 1} ${CONFIG.FLOAT.DURATION} ease-in-out infinite,
-                      tilt${i + 1} ${CONFIG.FLOAT.DURATION} ease-in-out infinite
+                      tilt${i + 1} ${CONFIG.FLOAT.DURATION} ease-in-out infinite,
+                      borderGlow ${CONFIG.GLOW.PULSE_DURATION} ease-in-out infinite
                     ` : 'none',
                     animationDelay: `${i * 0.2}s`,
+                    boxShadow: `0 0 8px ${CONFIG.GLOW.SECONDARY_COLOR}30, inset 0 0 5px ${CONFIG.GLOW.SECONDARY_COLOR}20`,
+                    transition: `all ${CONFIG.HOVER.DURATION} cubic-bezier(0.175, 0.885, 0.32, 1.275)`
                   }}
                 >
                   <div className="absolute -right-8 -bottom-8 opacity-5">
                     <feature.Icon size={isMobile ? 120 : 180} strokeWidth={0.5} />
                   </div>
                   <div className="relative z-10">
-                    <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2 text-[#f7ebe9]">{feature.title}</h3>
+                    <h3 
+                      className="text-base md:text-lg font-semibold mb-1 md:mb-2 text-[#f7ebe9]"
+                      style={{
+                        textShadow: `0 0 5px ${CONFIG.GLOW.ACCENT_COLOR}40`
+                      }}
+                    >{feature.title}</h3>
                     <p className="text-xs md:text-sm text-[#f7ebe9]/80">{feature.desc}</p>
                   </div>
                 </div>
