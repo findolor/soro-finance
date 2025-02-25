@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import React from "react";
-import Navbar from "@/components/ui/navbar";
+// import Navbar from "@/components/ui/navbar";
 // import Footer from "./Footer";
 import "./globals.css";
 
@@ -17,23 +17,36 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body>
-        <div className={`flex flex-col justify-between min-h-screen`}>
-          <div className="flex flex-col">
-            <div className="sticky top-0 z-10 bg-html-background">
-              <div className="min-w-[1024px] max-w-[1440px] mx-auto">
-                <Navbar />
-              </div>
-              <div className="h-[1px] bg-[#EBF2F7]" />
-            </div>
-            <main className={`${"min-w-[1024px] max-w-[1440px]"} mx-auto pb-10`}>
-              {children}
-            </main>
-          </div>
-          {/* <Footer /> */}
-        </div>
+      {children}
       </body>
     </html>
   );
 };
+// const RootLayout = ({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) => {
+//   return (
+//     <html lang="en">
+//       <body>
+//         <div className={`flex flex-col justify-between min-h-screen`}>
+//           <div className="flex flex-col">
+//             <div className="sticky top-0 z-10 bg-html-background">
+//               <div className="min-w-[1024px] max-w-[1440px] mx-auto">
+//                 <Navbar />
+//               </div>
+//               <div className="h-[1px] bg-[#EBF2F7]" />
+//             </div>
+//             <main className={`${"min-w-[1024px] max-w-[1440px]"} mx-auto pb-10`}>
+//               {children}
+//             </main>
+//           </div>
+//           {/* <Footer /> */}
+//         </div>
+//       </body>
+//     </html>
+//   );
+// };
 
 export default RootLayout;

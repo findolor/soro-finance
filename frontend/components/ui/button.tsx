@@ -47,7 +47,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={clsx(
-        "flex justify-center items-center rounded-lg transition-colors",
+        "flex justify-center items-center rounded-lg transition-colors cursor-pointer hover:brightness-95",
         sizeClass,
         bgColorClass,
         disabled && "opacity-50 cursor-not-allowed",
