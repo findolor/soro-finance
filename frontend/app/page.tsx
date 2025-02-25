@@ -436,7 +436,7 @@ const MainPage = () => {
                 }}
               >Smart Accounting & Payments<br className="hidden sm:block"/>for Stellar Projects</h2>
               <p className="text-base md:text-xl mb-6 md:mb-10 text-[#f7ebe9]/80 px-2">
-                A structured way to manage your project&apos;s finances, automate payments,<br className="hidden md:block"/>and streamline SCF applications.
+                A structured way to manage your project&apos;s finances, automate payments,<br className="hidden md:block"/>and simplify budget management.
               </p>
               
               <div className="flex justify-center space-x-4">
