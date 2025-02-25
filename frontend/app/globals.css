@@ -8,22 +8,21 @@ body {
   padding: 0;
   margin: 0;
   font-family: Montserrat, sans-serif;
-  background-color: #FBFBFB;
+  background-color: var(--color-html-background);
 }
 
-:root {
-  --background: #F7F6E9;
-  --background-dark: #deddd1;
-  --foreground: #22200C;
-  --primary: #B5E3C9;
-  --primary-dark: #a2ccb4;
-  --secondary: #C0C2E8;
-  --secondary-dark: #acaed0;
-  --accent: #A03B74;
-  --accent-dark: #903568;
-  --muted: var(--background-dark);
-  --muted-foreground: var(--foreground);
-  --text: #22200C;
+@theme {
+  --color-*: initial;
+  --color-html-background: #FBFBFB;
+  --color-background: #F7F6E9;
+  --color-background-dark: #deddd1;
+  --color-primary: #B5E3C9;
+  --color-primary-dark: #a2ccb4;
+  --color-secondary: #C0C2E8;
+  --color-secondary-dark: #acaed0;
+  --color-accent: #A03B74;
+  --color-accent-dark: #903568;
+  --color-text: #22200C;
 }
 
 a {

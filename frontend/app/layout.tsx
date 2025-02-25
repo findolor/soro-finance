@@ -19,13 +19,13 @@ const RootLayout = ({
       <body>
         <div className={`flex flex-col justify-between min-h-screen`}>
           <div className="flex flex-col">
-            <div className="sticky top-0 z-10">
-              <div className="max-w-[1024px] mx-auto bg-background">
+            <div className="sticky top-0 z-10 bg-html-background">
+              <div className="min-w-[1024px] max-w-[1440px] mx-auto">
                 <Navbar />
               </div>
               <div className="h-[1px] bg-[#EBF2F7]" />
             </div>
-            <main className={`${"max-w-[1024px]"} mx-auto pb-10`}>
+            <main className={`${"min-w-[1024px] max-w-[1440px]"} mx-auto pb-10`}>
               {children}
             </main>
           </div>
