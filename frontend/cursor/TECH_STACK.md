@@ -100,6 +100,11 @@ frontend/
 │   │   ├── use-projects.ts
 │   │   └── ...
 │   │
+│   ├── store/                # Zustand store
+│   │   ├── index.ts          # Store exports
+│   │   ├── slices/           # Store slices
+│   │   └── types.ts          # Store types
+│   │
 │   ├── utils/                # Utility functions
 │   │   ├── date.ts
 │   │   ├── currency.ts
@@ -139,7 +144,7 @@ frontend/
 5. **Accessibility**: Following WCAG guidelines for accessible UI
 6. **Performance**: Code splitting, lazy loading, and optimized assets
 7. **Testing**: Component and integration testing
-8. **State Management**: Context API for global state (or Redux/Zustand if needed)
+8. **State Management**: Zustand for global state management
 9. **API Integration**: Centralized API client for backend communication
 10. **Error Handling**: Consistent error boundaries and fallbacks
 

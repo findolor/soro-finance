@@ -1,14 +1,11 @@
-import { Router } from 'express';
-import { login, logout } from '../controllers/auth.controller';
-import { authenticateJWT } from '../middlewares/auth.middleware';
-import { type RequestHandler } from 'express';
+import { Router } from "express";
+import { connect, getNonce } from "../controllers/auth.controller";
+import { type RequestHandler } from "express";
 
 const router = Router();
 
 // Public routes
-router.post('/login', login as RequestHandler);
+router.get("/nonce", getNonce as RequestHandler);
+router.post("/connect", connect as RequestHandler);
 
-// Protected routes
-router.post('/logout', authenticateJWT as RequestHandler, logout as RequestHandler);
-
-export default router; 
+export default router;

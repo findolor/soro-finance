@@ -3,6 +3,7 @@ import React from "react";
 // import Navbar from "@/components/ui/navbar";
 // import Footer from "./Footer";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "SoroFinance - Smart Accounting & Payments for Stellar Projects",
@@ -40,6 +41,21 @@ const RootLayout = ({
     <html lang="en">
       <body>
       {children}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            backgroundColor: "#FBFBFB",
+            color: "#687B8C",
+            border: "1px solid #EBF2F7",
+            fontSize: "14px",
+            wordBreak: "break-all",
+          },
+        }}
+        containerStyle={{
+          top: 10,
+        }}
+      />
       </body>
     </html>
   );

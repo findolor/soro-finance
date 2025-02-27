@@ -18,6 +18,7 @@
     "db:reset": "bun prisma/scripts/reset.ts"
   },
   "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
