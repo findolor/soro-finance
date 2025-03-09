@@ -1,15 +1,9 @@
 import BaseApiService from "./base";
 
 const BASE_PATH = "auth";
-const GET_NONCE = `${BASE_PATH}/nonce`;
-const CONNECT = `${BASE_PATH}/connect`;
+const SIGN_UP = `${BASE_PATH}/signup`;
 
-interface IGetNonceRequest {
-  address: string;
-}
-
-interface IConnectRequest {
-  signature: string;
+interface ISignUpRequest {
   address: string;
 }
 
@@ -18,20 +12,8 @@ class AuthenticationApiService extends BaseApiService {
     super(undefined);
   }
 
-  public async getNonce({ address }: IGetNonceRequest) {
-    const res = await this.get<{ nonce: string }>(GET_NONCE, { address });
-    return res;
-  }
-
-  public async connect({ signature, address }: IConnectRequest) {
-    const res = await this.post<{
-      accessToken: string;
-      refreshToken: string;
-    }>(CONNECT, {
-      signature,
-      address,
-    });
-    return res;
+  public async signUp({ address }: ISignUpRequest) {
+    return this.post(SIGN_UP, { address });
   }
 }
 

@@ -2,13 +2,13 @@ import {
   isAllowed,
   setAllowed,
   getAddress,
-  signMessage,
   isConnected as isConnectedFreighter,
   requestAccess,
 } from "@stellar/freighter-api";
 import useAppStore from "@/lib/store/app";
 import { errorToast } from "@/lib/utils/toast";
 import useApi from "@/lib/hooks/useApi";
+import { createClient } from "@/lib/supabase/client";
 
 const useWallet = () => {
   const {
@@ -16,14 +16,14 @@ const useWallet = () => {
     walletAddress,
     setIsConnected,
     setWalletAddress,
-    setAccessToken,
-    setRefreshToken,
     setLoading,
   } = useAppStore();
   const { authenticationApiService } = useApi();
 
   const connect = async () => {
     try {
+      const supabase = createClient();
+
       setLoading(true);
       let address = "";
 
@@ -51,28 +51,19 @@ const useWallet = () => {
         address = info.address;
       }
 
-      const { nonce } = await authenticationApiService.getNonce({
-        address,
-      });
+      await authenticationApiService.signUp({ address });
 
-      const data = await signMessage(btoa(JSON.stringify({ nonce })), {
-        address,
+      const { error } = await supabase.auth.signInWithPassword({
+        email: `${address.toLowerCase()}-${
+          process.env.NEXT_PUBLIC_ANONYMOUS_SUFFIX
+        }`,
+        password: process.env.NEXT_PUBLIC_ANONYMOUS_PASSWORD as string,
       });
-      if (!data.signedMessage) {
-        throw new Error("Failed to sign message");
+      if (error) {
+        throw new Error("Wallet connection failed");
       }
 
-      const signature = Buffer.from(data.signedMessage).toString("base64");
-
-      const { accessToken, refreshToken } =
-        await authenticationApiService.connect({
-          signature,
-          address,
-        });
-
       setWalletAddress(info.address);
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
       setIsConnected(true);
       setLoading(false);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,7 +76,6 @@ const useWallet = () => {
   const disconnect = async () => {
     setIsConnected(false);
     setWalletAddress("");
-    setAccessToken("null");
   };
 
   return {
