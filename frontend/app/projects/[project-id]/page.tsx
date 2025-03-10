@@ -274,6 +274,92 @@ const ProjectDetailPage: FC = () => {
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Project Milestones</h2>
 
+        {/* Total Project Budget Summary - Moved to top */}
+        <Card className="mb-8 border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle>Total Project Budget</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Calculate total duration */}
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Total Timeline:</span>
+                <span>
+                  {TEST_MILESTONES[0]?.timeline.split(" - ")[0]} -{" "}
+                  {
+                    TEST_MILESTONES[TEST_MILESTONES.length - 1]?.timeline.split(
+                      " - "
+                    )[1]
+                  }
+                </span>
+              </div>
+
+              {/* Calculate total team members cost */}
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Total Team Members Cost:</span>
+                <span className="font-semibold">
+                  $
+                  {TEST_MILESTONES.reduce(
+                    (total, milestone) =>
+                      total +
+                      milestone.budget.teamMembers.reduce(
+                        (sum, member) => sum + member.monthlyCost,
+                        0
+                      ),
+                    0
+                  ).toLocaleString()}
+                </span>
+              </div>
+
+              {/* Calculate total third-party services cost */}
+              <div className="flex justify-between items-center">
+                <span className="font-medium">
+                  Total 3rd Party Services Cost:
+                </span>
+                <span className="font-semibold">
+                  $
+                  {TEST_MILESTONES.reduce(
+                    (total, milestone) =>
+                      total +
+                      milestone.budget.thirdPartyServices.reduce(
+                        (sum, service) => sum + service.monthlyCost,
+                        0
+                      ),
+                    0
+                  ).toLocaleString()}
+                </span>
+              </div>
+
+              <Separator />
+
+              {/* Calculate grand total */}
+              <div className="flex justify-between items-center text-lg">
+                <span className="font-bold">Grand Total:</span>
+                <span className="font-bold text-primary">
+                  $
+                  {TEST_MILESTONES.reduce(
+                    (total, milestone) =>
+                      total +
+                      milestone.budget.teamMembers.reduce(
+                        (sum, member) => sum + member.monthlyCost,
+                        0
+                      ) +
+                      milestone.budget.thirdPartyServices.reduce(
+                        (sum, service) => sum + service.monthlyCost,
+                        0
+                      ),
+                    0
+                  ).toLocaleString()}
+                </span>
+              </div>
+
+              <div className="text-sm text-muted-foreground mt-2">
+                <p>* Monthly costs aggregated across all milestones</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="space-y-8">
           {TEST_MILESTONES.map((milestone) => (
             <Card key={milestone.id} className="overflow-hidden">
