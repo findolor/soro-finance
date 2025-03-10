@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/form";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { Database } from "@/lib/supabase/types";
 
 // Define social media platforms
 const SOCIAL_MEDIA_PLATFORMS = [
@@ -53,7 +54,8 @@ const SOCIAL_MEDIA_PLATFORMS = [
   { value: "telegram", label: "Telegram" },
 ];
 
-// Social media link type
+// Types
+type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
 type SocialMediaLink = {
   platform: string;
   url: string;
@@ -119,20 +121,24 @@ const CreateProjectPage: FC = () => {
       // Get form data
       const formData = form.getValues();
 
+      // Create project data object using Supabase types
+      const projectData: ProjectInsert = {
+        name: formData.projectName,
+        description: formData.projectDescription,
+        scf_link: formData.scfLink || null,
+        social_media_links: formData.socialMediaLinks.filter(
+          (link) => link.url.trim() !== ""
+        ),
+        email: formData.email,
+        wallet_address: walletAddress!,
+      };
+
       const { data, error } = await supabase
         .from("projects")
-        .insert({
-          name: formData.projectName,
-          description: formData.projectDescription,
-          scf_link: formData.scfLink,
-          social_media_links: formData.socialMediaLinks.filter(
-            (link) => link.url.trim() !== ""
-          ),
-          email: formData.email,
-          wallet_address: walletAddress!,
-        })
+        .insert(projectData)
         .select("id")
         .single();
+
       if (error) {
         throw error;
       }

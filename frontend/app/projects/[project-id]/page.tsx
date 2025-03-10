@@ -12,21 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
+import { Database } from "@/lib/supabase/types";
 
 // Types
+type ProjectRow = Database["public"]["Tables"]["projects"]["Row"];
 type SocialMediaLink = {
   platform: string;
   url: string;
-};
-
-type Project = {
-  id: string;
-  projectName: string;
-  projectDescription: string;
-  scfLink: string;
-  socialMediaLinks: SocialMediaLink[];
-  email: string;
-  createdAt: string;
 };
 
 const ProjectDetailPage: FC = () => {
@@ -34,7 +26,7 @@ const ProjectDetailPage: FC = () => {
   const router = useRouter();
   const projectId = params["project-id"] as string;
 
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,19 +51,7 @@ const ProjectDetailPage: FC = () => {
           throw new Error("Project not found");
         }
 
-        // Transform the data to match our Project type
-        const projectData: Project = {
-          id: data.id,
-          projectName: data.name,
-          projectDescription: data.description,
-          scfLink: data.scf_link || "",
-          socialMediaLinks:
-            (data.social_media_links as SocialMediaLink[]) || [],
-          email: data.email,
-          createdAt: data.created_at || new Date().toISOString(),
-        };
-
-        setProject(projectData);
+        setProject(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to load project details");
@@ -103,6 +83,18 @@ const ProjectDetailPage: FC = () => {
   const getPlatformIcon = (platform: string) => {
     // This is a placeholder. In a real implementation, you would use actual icons
     return platform.charAt(0).toUpperCase();
+  };
+
+  // Helper function to get social media links from project
+  const getSocialMediaLinks = (project: ProjectRow): SocialMediaLink[] => {
+    if (!project.social_media_links) return [];
+    return project.social_media_links as SocialMediaLink[];
+  };
+
+  // Format date to a more readable format
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString();
   };
 
   if (loading) {
@@ -141,6 +133,8 @@ const ProjectDetailPage: FC = () => {
     );
   }
 
+  const socialMediaLinks = getSocialMediaLinks(project);
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-6">
@@ -154,10 +148,10 @@ const ProjectDetailPage: FC = () => {
 
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl font-bold">{project.projectName}</h1>
+            <h1 className="text-3xl font-bold">{project.name}</h1>
             <div className="flex items-center gap-2 mt-2">
               <span className="text-sm text-muted-foreground">
-                Created {new Date(project.createdAt).toLocaleDateString()}
+                Created {formatDate(project.created_at)}
               </span>
             </div>
           </div>
@@ -165,7 +159,10 @@ const ProjectDetailPage: FC = () => {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => window.open(project.scfLink, "_blank")}
+              onClick={() =>
+                project.scf_link && window.open(project.scf_link, "_blank")
+              }
+              disabled={!project.scf_link}
             >
               View on SCF
             </Button>
@@ -181,9 +178,7 @@ const ProjectDetailPage: FC = () => {
               <CardTitle>About the Project</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="whitespace-pre-line">
-                {project.projectDescription}
-              </p>
+              <p className="whitespace-pre-line">{project.description}</p>
             </CardContent>
           </Card>
         </div>
@@ -204,11 +199,11 @@ const ProjectDetailPage: FC = () => {
                 </a>
               </div>
 
-              {project.socialMediaLinks.length > 0 && (
+              {socialMediaLinks.length > 0 && (
                 <div>
                   <h3 className="text-sm font-medium mb-2">Social Media</h3>
                   <div className="space-y-2">
-                    {project.socialMediaLinks.map((link, index) => (
+                    {socialMediaLinks.map((link, index) => (
                       <a
                         key={index}
                         href={link.url}
