@@ -47,6 +47,7 @@ import {
   getPlatformDisplayName,
 } from "@/lib/utils/socialMedia";
 import { ProjectInsert } from "@/lib/utils/types";
+import Header from "@/components/ui/header";
 
 // Define social media platforms for the dropdown
 const SOCIAL_MEDIA_PLATFORMS = Object.entries(PLATFORM_MAP)
@@ -148,13 +149,14 @@ const CreateProjectPage: FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Create Project</h1>
-        <Button variant="outline" onClick={() => router.push("/projects")}>
-          ← Back to Projects
-        </Button>
-      </div>
+    <div className="w-full py-8">
+      <Header
+        title="Create Project"
+        showBackButton={true}
+        backButtonUrl="/projects"
+      >
+        {/* Additional buttons can be added here if needed */}
+      </Header>
 
       {isConnected ? (
         <Card className="w-full">

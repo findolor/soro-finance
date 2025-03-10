@@ -24,7 +24,7 @@ export default function ProjectsLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <Sidebar>
           <SidebarHeader className="p-4">
             <h2 className="text-xl font-bold">Soro Finance</h2>
@@ -62,7 +62,7 @@ export default function ProjectsLayout({
             )}
           </SidebarFooter>
         </Sidebar>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-6 w-full">{children}</main>
       </div>
     </SidebarProvider>
   );

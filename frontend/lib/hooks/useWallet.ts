@@ -6,9 +6,9 @@ import {
   requestAccess,
 } from "@stellar/freighter-api";
 import useAppStore from "@/lib/store/app";
-import { errorToast } from "@/lib/utils/toast";
 import useApi from "@/lib/hooks/useApi";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const useWallet = () => {
   const {
@@ -69,7 +69,7 @@ const useWallet = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setLoading(false);
-      errorToast(error);
+      toast.error(error);
     }
   };
 

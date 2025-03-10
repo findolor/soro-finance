@@ -23,6 +23,7 @@ import {
 import { PlusCircle } from "lucide-react";
 import { ProjectRow } from "@/lib/utils/types";
 import { formatDate, truncateText } from "@/lib/utils/formatting";
+import Header from "@/components/ui/header";
 
 const ProjectsPage: FC = () => {
   const router = useRouter();
@@ -68,9 +69,9 @@ const ProjectsPage: FC = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-8 px-4">
+      <div className="w-full py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Projects</h1>
+          <Skeleton className="h-8 w-48" />
           <Skeleton className="h-10 w-36" />
         </div>
         <Card>
@@ -91,14 +92,13 @@ const ProjectsPage: FC = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Projects</h1>
+    <div className="w-full py-8">
+      <Header title="Projects">
         <Button onClick={handleCreateProject}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Create Project
         </Button>
-      </div>
+      </Header>
 
       <Card>
         <CardHeader>

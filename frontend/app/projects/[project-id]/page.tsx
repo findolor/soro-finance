@@ -2,13 +2,7 @@
 
 import { FC, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
@@ -17,7 +11,6 @@ import {
   getPlatformIcon,
   getSocialMediaLinks,
 } from "@/lib/utils/socialMedia";
-import { formatDate } from "@/lib/utils/formatting";
 import { ProjectRow } from "@/lib/utils/types";
 import {
   Table,
@@ -29,6 +22,9 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { ExternalLink } from "lucide-react";
+import EmptyMilestones from "@/components/projects/EmptyMilestones";
+import Header from "@/components/ui/header";
 
 // Test data for milestones
 const TEST_MILESTONES = [
@@ -108,6 +104,20 @@ const ProjectDetailPage: FC = () => {
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [milestones, setMilestones] = useState<typeof TEST_MILESTONES>([]);
+  const [refreshMilestones, setRefreshMilestones] = useState(0);
+
+  // For debugging purposes
+  console.log("Available test milestones:", TEST_MILESTONES.length);
+
+  // Function to toggle between test data and empty state for development purposes
+  const toggleTestData = () => {
+    if (milestones.length === 0) {
+      setMilestones(TEST_MILESTONES);
+    } else {
+      setMilestones([]);
+    }
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -142,17 +152,51 @@ const ProjectDetailPage: FC = () => {
     fetchProject();
   }, [projectId]);
 
+  // Fetch or load milestones
+  useEffect(() => {
+    // TODO: Replace with actual API call when Supabase schema is set up
+    // For now, just use test data (TEST_MILESTONES)
+    const loadMilestones = async () => {
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Start with empty state by default
+        setMilestones([]);
+      } catch (err) {
+        console.error("Error loading milestones:", err);
+      }
+    };
+
+    loadMilestones();
+  }, [projectId, refreshMilestones]);
+
+  const handleMilestoneCreated = () => {
+    // Trigger a refresh of milestones
+    setRefreshMilestones((prev) => prev + 1);
+  };
+
   if (loading) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="space-y-6">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-6 w-1/2" />
-          <Skeleton className="h-64 w-full rounded-lg" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Skeleton className="h-32 rounded-lg" />
-            <Skeleton className="h-32 rounded-lg" />
-          </div>
+      <div className="w-full py-8">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+        {/* Skeleton loading state */}
+        <div className="space-y-8">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/4 mb-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -160,19 +204,21 @@ const ProjectDetailPage: FC = () => {
 
   if (error || !project) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-red-500">Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{error || "Project not found"}</p>
-          </CardContent>
-          <CardFooter>
+      <div className="w-full py-8">
+        <Header
+          title="Project Details"
+          showBackButton={true}
+          backButtonUrl="/projects"
+        >
+          {/* Additional buttons can be added here if needed */}
+        </Header>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <p className="text-red-500 mb-4">{error || "Project not found"}</p>
             <Button onClick={() => router.push("/projects")}>
               Back to Projects
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
       </div>
     );
@@ -181,40 +227,26 @@ const ProjectDetailPage: FC = () => {
   const socialMediaLinks = getSocialMediaLinks(project);
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-6">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/projects")}
-          className="mb-4"
-        >
-          ← Back to Projects
-        </Button>
-
-        <div className="flex justify-between items-start flex-wrap gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">{project.name}</h1>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-sm text-muted-foreground">
-                Created {formatDate(project.created_at)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() =>
-                project.scf_link && window.open(project.scf_link, "_blank")
+    <div className="w-full py-8">
+      <Header
+        title={project.name}
+        showBackButton={true}
+        backButtonUrl="/projects"
+      >
+        {project.scf_link && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (project.scf_link) {
+                window.open(project.scf_link, "_blank");
               }
-              disabled={!project.scf_link}
-            >
-              View on SCF
-            </Button>
-            <Button>Support Project</Button>
-          </div>
-        </div>
-      </div>
+            }}
+          >
+            <ExternalLink className="mr-2 h-4 w-4" />
+            View SCF Project
+          </Button>
+        )}
+      </Header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -272,221 +304,258 @@ const ProjectDetailPage: FC = () => {
 
       {/* Milestones Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Project Milestones</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Project Milestones</h2>
 
-        {/* Total Project Budget Summary - Moved to top */}
-        <Card className="mb-8 border-2 border-primary/20">
-          <CardHeader>
-            <CardTitle>Total Project Budget</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Calculate total duration */}
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Total Timeline:</span>
-                <span>
-                  {TEST_MILESTONES[0]?.timeline.split(" - ")[0]} -{" "}
-                  {
-                    TEST_MILESTONES[TEST_MILESTONES.length - 1]?.timeline.split(
-                      " - "
-                    )[1]
-                  }
-                </span>
-              </div>
+          {/* Development-only toggle button */}
+          {process.env.NODE_ENV === "development" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTestData}
+              className="text-xs"
+            >
+              Toggle Test Data
+            </Button>
+          )}
+        </div>
 
-              {/* Calculate total team members cost */}
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Total Team Members Cost:</span>
-                <span className="font-semibold">
-                  $
-                  {TEST_MILESTONES.reduce(
-                    (total, milestone) =>
-                      total +
-                      milestone.budget.teamMembers.reduce(
-                        (sum, member) => sum + member.monthlyCost,
-                        0
-                      ),
-                    0
-                  ).toLocaleString()}
-                </span>
-              </div>
-
-              {/* Calculate total third-party services cost */}
-              <div className="flex justify-between items-center">
-                <span className="font-medium">
-                  Total 3rd Party Services Cost:
-                </span>
-                <span className="font-semibold">
-                  $
-                  {TEST_MILESTONES.reduce(
-                    (total, milestone) =>
-                      total +
-                      milestone.budget.thirdPartyServices.reduce(
-                        (sum, service) => sum + service.monthlyCost,
-                        0
-                      ),
-                    0
-                  ).toLocaleString()}
-                </span>
-              </div>
-
-              <Separator />
-
-              {/* Calculate grand total */}
-              <div className="flex justify-between items-center text-lg">
-                <span className="font-bold">Grand Total:</span>
-                <span className="font-bold text-primary">
-                  $
-                  {TEST_MILESTONES.reduce(
-                    (total, milestone) =>
-                      total +
-                      milestone.budget.teamMembers.reduce(
-                        (sum, member) => sum + member.monthlyCost,
-                        0
-                      ) +
-                      milestone.budget.thirdPartyServices.reduce(
-                        (sum, service) => sum + service.monthlyCost,
-                        0
-                      ),
-                    0
-                  ).toLocaleString()}
-                </span>
-              </div>
-
-              <div className="text-sm text-muted-foreground mt-2">
-                <p>* Monthly costs aggregated across all milestones</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-8">
-          {TEST_MILESTONES.map((milestone) => (
-            <Card key={milestone.id} className="overflow-hidden">
+        {milestones.length > 0 ? (
+          <>
+            {/* Total Project Budget Summary - Moved to top */}
+            <Card className="mb-8 border-2 border-primary/20">
               <CardHeader>
-                <div className="flex justify-between items-center flex-wrap gap-2">
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-1">
-                      Milestone {milestone.id}
-                    </div>
-                    <CardTitle className="text-xl">{milestone.name}</CardTitle>
-                  </div>
-                  <Badge variant="outline" className="font-normal">
-                    {milestone.timeline}
-                  </Badge>
-                </div>
+                <CardTitle>Total Project Budget</CardTitle>
               </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Calculate total duration */}
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Total Timeline:</span>
+                    <span>
+                      {milestones[0]?.timeline.split(" - ")[0]} -{" "}
+                      {
+                        milestones[milestones.length - 1]?.timeline.split(
+                          " - "
+                        )[1]
+                      }
+                    </span>
+                  </div>
 
-              <CardContent className="pt-6">
-                <div className="space-y-6">
-                  {/* General Information */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      General Information
-                    </h3>
-                    <p>{milestone.development}</p>
+                  {/* Calculate total team members cost */}
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">
+                      Total Team Members Cost:
+                    </span>
+                    <span className="font-semibold">
+                      $
+                      {milestones
+                        .reduce(
+                          (total, milestone) =>
+                            total +
+                            milestone.budget.teamMembers.reduce(
+                              (sum, member) => sum + member.monthlyCost,
+                              0
+                            ),
+                          0
+                        )
+                        .toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Calculate total third-party services cost */}
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">
+                      Total 3rd Party Services Cost:
+                    </span>
+                    <span className="font-semibold">
+                      $
+                      {milestones
+                        .reduce(
+                          (total, milestone) =>
+                            total +
+                            milestone.budget.thirdPartyServices.reduce(
+                              (sum, service) => sum + service.monthlyCost,
+                              0
+                            ),
+                          0
+                        )
+                        .toLocaleString()}
+                    </span>
                   </div>
 
                   <Separator />
 
-                  {/* Budget Breakdown */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">
-                      Budget Breakdown
-                    </h3>
+                  {/* Calculate grand total */}
+                  <div className="flex justify-between items-center text-lg">
+                    <span className="font-bold">Grand Total:</span>
+                    <span className="font-bold text-primary">
+                      $
+                      {milestones
+                        .reduce(
+                          (total, milestone) =>
+                            total +
+                            milestone.budget.teamMembers.reduce(
+                              (sum, member) => sum + member.monthlyCost,
+                              0
+                            ) +
+                            milestone.budget.thirdPartyServices.reduce(
+                              (sum, service) => sum + service.monthlyCost,
+                              0
+                            ),
+                          0
+                        )
+                        .toLocaleString()}
+                    </span>
+                  </div>
 
-                    {/* Team Members */}
-                    <div className="mb-6">
-                      <h4 className="text-md font-medium mb-3">Team Members</h4>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Monthly Cost</TableHead>
-                            <TableHead>Wallet Address</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {milestone.budget.teamMembers.map((member, index) => (
-                            <TableRow key={index}>
-                              <TableCell className="font-medium">
-                                {member.name}
-                              </TableCell>
-                              <TableCell>{member.role}</TableCell>
-                              <TableCell>
-                                ${member.monthlyCost.toLocaleString()}
-                              </TableCell>
-                              <TableCell>
-                                {member.walletAddress ? (
-                                  <span className="text-xs font-mono">
-                                    {member.walletAddress}
-                                  </span>
-                                ) : (
-                                  <span className="text-muted-foreground text-sm">
-                                    Not provided
-                                  </span>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-
-                    {/* Third Party Services */}
-                    {milestone.budget.thirdPartyServices.length > 0 && (
-                      <div>
-                        <h4 className="text-md font-medium mb-3">
-                          3rd Party Services
-                        </h4>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Service</TableHead>
-                              <TableHead>Monthly Cost</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {milestone.budget.thirdPartyServices.map(
-                              (service, index) => (
-                                <TableRow key={index}>
-                                  <TableCell className="font-medium">
-                                    {service.name}
-                                  </TableCell>
-                                  <TableCell>
-                                    ${service.monthlyCost.toLocaleString()}
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    )}
-
-                    {/* Total Monthly Cost */}
-                    <div className="mt-4 text-right">
-                      <p className="font-semibold">
-                        Total Monthly Cost: $
-                        {(
-                          milestone.budget.teamMembers.reduce(
-                            (sum, member) => sum + member.monthlyCost,
-                            0
-                          ) +
-                          milestone.budget.thirdPartyServices.reduce(
-                            (sum, service) => sum + service.monthlyCost,
-                            0
-                          )
-                        ).toLocaleString()}
-                      </p>
-                    </div>
+                  <div className="text-sm text-muted-foreground mt-2">
+                    <p>* Monthly costs aggregated across all milestones</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+
+            <div className="space-y-8">
+              {milestones.map((milestone) => (
+                <Card key={milestone.id} className="overflow-hidden">
+                  <CardHeader>
+                    <div className="flex justify-between items-center flex-wrap gap-2">
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Milestone {milestone.id}
+                        </div>
+                        <CardTitle className="text-xl">
+                          {milestone.name}
+                        </CardTitle>
+                      </div>
+                      <Badge variant="outline" className="font-normal">
+                        {milestone.timeline}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-6">
+                    <div className="space-y-6">
+                      {/* General Information */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          General Information
+                        </h3>
+                        <p>{milestone.development}</p>
+                      </div>
+
+                      <Separator />
+
+                      {/* Budget Breakdown */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">
+                          Budget Breakdown
+                        </h3>
+
+                        {/* Team Members */}
+                        <div className="mb-6">
+                          <h4 className="text-md font-medium mb-3">
+                            Team Members
+                          </h4>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Monthly Cost</TableHead>
+                                <TableHead>Wallet Address</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {milestone.budget.teamMembers.map(
+                                (member, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell className="font-medium">
+                                      {member.name}
+                                    </TableCell>
+                                    <TableCell>{member.role}</TableCell>
+                                    <TableCell>
+                                      ${member.monthlyCost.toLocaleString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      {member.walletAddress ? (
+                                        <span className="text-xs font-mono">
+                                          {member.walletAddress}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground text-sm">
+                                          Not provided
+                                        </span>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                )
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+
+                        {/* Third Party Services */}
+                        {milestone.budget.thirdPartyServices.length > 0 && (
+                          <div>
+                            <h4 className="text-md font-medium mb-3">
+                              3rd Party Services
+                            </h4>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Service</TableHead>
+                                  <TableHead>Monthly Cost</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {milestone.budget.thirdPartyServices.map(
+                                  (service, index) => (
+                                    <TableRow key={index}>
+                                      <TableCell className="font-medium">
+                                        {service.name}
+                                      </TableCell>
+                                      <TableCell>
+                                        ${service.monthlyCost.toLocaleString()}
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+
+                        {/* Total Monthly Cost */}
+                        <div className="mt-4 text-right">
+                          <p className="font-semibold">
+                            Total Monthly Cost: $
+                            {(
+                              milestone.budget.teamMembers.reduce(
+                                (sum, member) => sum + member.monthlyCost,
+                                0
+                              ) +
+                              milestone.budget.thirdPartyServices.reduce(
+                                (sum, service) => sum + service.monthlyCost,
+                                0
+                              )
+                            ).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        ) : (
+          <EmptyMilestones
+            projectId={projectId}
+            onMilestoneCreated={handleMilestoneCreated}
+          />
+        )}
       </div>
     </div>
   );
