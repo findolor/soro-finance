@@ -16,6 +16,7 @@ import { ExternalLink } from "lucide-react";
 import Header from "@/components/ui/header";
 import { toast } from "sonner";
 import BudgetBreakdownReadOnly from "@/components/budget/BudgetBreakdownReadOnly";
+import BudgetBreakdown from "@/components/budget/BudgetBreakdown";
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
@@ -183,7 +184,8 @@ const ProjectDetailPage: FC = () => {
         </Card>
 
         {/* Budget Breakdown Section */}
-        <BudgetBreakdownReadOnly />
+        <BudgetBreakdown projectId={projectId} />
+        {/* <BudgetBreakdownReadOnly /> */}
       </div>
     </div>
   );

@@ -4,12 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
 import { Form, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-
-export interface ThirdPartyService {
-  id: number;
-  name: string;
-  monthlyCost: number;
-}
+import { ThirdPartyService } from "./BudgetBreakdown";
 
 interface ThirdPartyServiceFormProps {
   thirdPartyServices: ThirdPartyService[];
@@ -34,7 +29,7 @@ const ThirdPartyServiceForm: FC<ThirdPartyServiceFormProps> = ({
     const newService: ThirdPartyService = {
       id: generateId(),
       name: "",
-      monthlyCost: 0,
+      monthly_cost: 0,
     };
     onChange([...thirdPartyServices, newService]);
   };
@@ -112,11 +107,11 @@ const ThirdPartyServiceForm: FC<ThirdPartyServiceFormProps> = ({
                         <Input
                           id={`cost-${service.id}`}
                           type="number"
-                          value={service.monthlyCost || ""}
+                          value={service.monthly_cost || ""}
                           onChange={(e) =>
                             updateThirdPartyService(
                               service.id,
-                              "monthlyCost",
+                              "monthly_cost",
                               parseFloat(e.target.value) || 0
                             )
                           }

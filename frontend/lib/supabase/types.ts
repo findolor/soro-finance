@@ -9,6 +9,148 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      deliverables: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: number
+          milestone_id: number | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: never
+          milestone_id?: number | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: never
+          milestone_id?: number | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliverables_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestone_services: {
+        Row: {
+          created_at: string | null
+          milestone_id: number
+          service_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          milestone_id: number
+          service_id: number
+        }
+        Update: {
+          created_at?: string | null
+          milestone_id?: number
+          service_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_services_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "third_party_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestone_team_members: {
+        Row: {
+          created_at: string | null
+          milestone_id: number
+          team_member_id: number
+        }
+        Insert: {
+          created_at?: string | null
+          milestone_id: number
+          team_member_id: number
+        }
+        Update: {
+          created_at?: string | null
+          milestone_id?: number
+          team_member_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_team_members_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_team_members_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestones: {
+        Row: {
+          created_at: string | null
+          date_range_end: string
+          date_range_start: string
+          description: string | null
+          id: number
+          name: string
+          project_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_range_end: string
+          date_range_start: string
+          description?: string | null
+          id?: never
+          name: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_range_end?: string
+          date_range_start?: string
+          description?: string | null
+          id?: never
+          name?: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           created_at: string | null
@@ -44,6 +186,82 @@ export type Database = {
           wallet_address?: string
         }
         Relationships: []
+      }
+      team_members: {
+        Row: {
+          created_at: string | null
+          daily_cost: number
+          id: number
+          name: string
+          project_id: string | null
+          role: string
+          updated_at: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_cost: number
+          id?: never
+          name: string
+          project_id?: string | null
+          role: string
+          updated_at?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_cost?: number
+          id?: never
+          name?: string
+          project_id?: string | null
+          role?: string
+          updated_at?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      third_party_services: {
+        Row: {
+          created_at: string | null
+          id: number
+          monthly_cost: number
+          name: string
+          project_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          monthly_cost: number
+          name: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          monthly_cost?: number
+          name?: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "third_party_services_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {

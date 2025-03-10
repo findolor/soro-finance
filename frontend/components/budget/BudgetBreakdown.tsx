@@ -1,10 +1,8 @@
 import { FC, useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TeamMemberForm, { TeamMember } from "./TeamMemberForm";
-import ThirdPartyServiceForm, {
-  ThirdPartyService,
-} from "./ThirdPartyServiceForm";
-import MilestoneForm, { Milestone } from "./MilestoneForm";
+import TeamMemberForm from "./TeamMemberForm";
+import ThirdPartyServiceForm from "./ThirdPartyServiceForm";
+import MilestoneForm from "./MilestoneForm";
 import { InfoIcon } from "lucide-react";
 import { differenceInDays, differenceInMonths } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -24,16 +22,65 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Tables } from "@/lib/supabase/types";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
-const BudgetBreakdown: FC = () => {
+// Define types based on Supabase schema
+export type TeamMember = Omit<
+  Tables<"team_members">,
+  "created_at" | "updated_at" | "project_id"
+> & {
+  id: number; // Keep id as number for local state management
+};
+
+export type ThirdPartyService = Omit<
+  Tables<"third_party_services">,
+  "created_at" | "updated_at" | "project_id"
+> & {
+  id: number; // Keep id as number for local state management
+};
+
+export type Deliverable = Omit<
+  Tables<"deliverables">,
+  "created_at" | "updated_at" | "milestone_id"
+> & {
+  id: number; // Keep id as number for local state management
+};
+
+export interface Milestone
+  extends Omit<
+    Tables<"milestones">,
+    | "created_at"
+    | "updated_at"
+    | "project_id"
+    | "date_range_start"
+    | "date_range_end"
+  > {
+  id: number; // Keep id as number for local state management
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
+  teamMemberIds: number[];
+  serviceIds: number[];
+  deliverables: Deliverable[];
+  isExpanded?: boolean;
+}
+
+interface BudgetBreakdownProps {
+  projectId: string;
+}
+
+const BudgetBreakdown: FC<BudgetBreakdownProps> = ({ projectId }) => {
   // Initialize with one empty team member
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
       id: 0,
       name: "",
       role: "",
-      dailyCost: 0,
-      walletAddress: "",
+      daily_cost: 0,
+      wallet_address: null,
     },
   ]);
 
@@ -44,7 +91,7 @@ const BudgetBreakdown: FC = () => {
     {
       id: 0,
       name: "",
-      monthlyCost: 0,
+      monthly_cost: 0,
     },
   ]);
 
@@ -73,7 +120,7 @@ const BudgetBreakdown: FC = () => {
       milestone.teamMemberIds.forEach((memberId) => {
         const member = teamMembers.find((m) => m.id === memberId);
         if (member) {
-          totalTeamCost += member.dailyCost * durationInDays;
+          totalTeamCost += member.daily_cost * durationInDays;
         }
       });
 
@@ -84,7 +131,7 @@ const BudgetBreakdown: FC = () => {
       milestone.serviceIds.forEach((serviceId) => {
         const service = thirdPartyServices.find((s) => s.id === serviceId);
         if (service) {
-          totalServiceCost += service.monthlyCost * durationInMonths;
+          totalServiceCost += service.monthly_cost * durationInMonths;
         }
       });
     });
@@ -107,8 +154,149 @@ const BudgetBreakdown: FC = () => {
   };
 
   // Handle create button click
-  const handleCreateBudget = () => {
+  const handleCreateBudget = async () => {
+    const supabase = createClient();
+
     console.log(JSON.stringify(completeBudgetData, null, 2));
+
+    try {
+      // Step 1: Insert team members
+      const teamMemberPromises = teamMembers.map(async (member) => {
+        const { name, role, daily_cost, wallet_address } = member;
+        const { data, error } = await supabase
+          .from("team_members")
+          .insert({
+            project_id: projectId,
+            name,
+            role,
+            daily_cost,
+            wallet_address,
+          })
+          .select("id")
+          .single();
+
+        if (error)
+          throw new Error(`Error inserting team member: ${error.message}`);
+        return data;
+      });
+
+      const insertedTeamMembers = await Promise.all(teamMemberPromises);
+      const teamMemberIds = insertedTeamMembers.map((member) => member.id);
+
+      // Step 1 (parallel): Insert third-party services
+      const servicePromises = thirdPartyServices.map(async (service) => {
+        const { name, monthly_cost } = service;
+        const { data, error } = await supabase
+          .from("third_party_services")
+          .insert({
+            project_id: projectId,
+            name,
+            monthly_cost,
+          })
+          .select("id")
+          .single();
+
+        if (error) throw new Error(`Error inserting service: ${error.message}`);
+        return data;
+      });
+
+      const insertedServices = await Promise.all(servicePromises);
+      const serviceIds = insertedServices.map((service) => service.id);
+
+      // Step 2: Insert milestones
+      const milestonePromises = milestones.map(async (milestone) => {
+        const { name, description, dateRange } = milestone;
+
+        if (!dateRange) throw new Error("Milestone date range is required");
+
+        const { data, error } = await supabase
+          .from("milestones")
+          .insert({
+            project_id: projectId,
+            name,
+            description,
+            date_range_start: dateRange.from.toISOString().split("T")[0],
+            date_range_end: dateRange.to.toISOString().split("T")[0],
+          })
+          .select("id")
+          .single();
+
+        if (error)
+          throw new Error(`Error inserting milestone: ${error.message}`);
+        return { ...data, originalMilestone: milestone };
+      });
+
+      const insertedMilestones = await Promise.all(milestonePromises);
+
+      // Step 3: Insert deliverables for each milestone
+      for (const { id: milestoneId, originalMilestone } of insertedMilestones) {
+        const deliverablePromises = originalMilestone.deliverables.map(
+          async (deliverable) => {
+            const { name, description } = deliverable;
+            const { error } = await supabase.from("deliverables").insert({
+              milestone_id: milestoneId,
+              name,
+              description,
+            });
+
+            if (error)
+              throw new Error(`Error inserting deliverable: ${error.message}`);
+          }
+        );
+
+        await Promise.all(deliverablePromises);
+
+        // Step 4a: Insert milestone-team member relationships
+        for (const teamMemberId of originalMilestone.teamMemberIds) {
+          // Find the corresponding inserted team member ID
+          const actualTeamMemberId =
+            teamMemberIds[teamMembers.findIndex((m) => m.id === teamMemberId)];
+
+          if (actualTeamMemberId) {
+            const { error } = await supabase
+              .from("milestone_team_members")
+              .insert({
+                milestone_id: milestoneId,
+                team_member_id: actualTeamMemberId,
+              });
+
+            if (error)
+              throw new Error(
+                `Error linking team member to milestone: ${error.message}`
+              );
+          }
+        }
+
+        // Step 4b: Insert milestone-service relationships
+        for (const serviceId of originalMilestone.serviceIds) {
+          // Find the corresponding inserted service ID
+          const actualServiceId =
+            serviceIds[thirdPartyServices.findIndex((s) => s.id === serviceId)];
+
+          if (actualServiceId) {
+            const { error } = await supabase.from("milestone_services").insert({
+              milestone_id: milestoneId,
+              service_id: actualServiceId,
+            });
+
+            if (error)
+              throw new Error(
+                `Error linking service to milestone: ${error.message}`
+              );
+          }
+        }
+      }
+
+      toast.success("Budget created successfully!");
+    } catch (error) {
+      console.error("Error creating budget:", error);
+      toast.error(
+        `Failed to create budget: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+
     setDialogOpen(false);
   };
 
@@ -120,29 +308,29 @@ const BudgetBreakdown: FC = () => {
         id: 1,
         name: "John Smith",
         role: "Frontend Developer",
-        dailyCost: 450,
-        walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
+        daily_cost: 450,
+        wallet_address: "0x1234567890abcdef1234567890abcdef12345678",
       },
       {
         id: 2,
         name: "Sarah Johnson",
         role: "Backend Developer",
-        dailyCost: 500,
-        walletAddress: "0xabcdef1234567890abcdef1234567890abcdef12",
+        daily_cost: 500,
+        wallet_address: "0xabcdef1234567890abcdef1234567890abcdef12",
       },
       {
         id: 3,
         name: "Michael Chen",
         role: "UI/UX Designer",
-        dailyCost: 400,
-        walletAddress: "0x7890abcdef1234567890abcdef1234567890abcd",
+        daily_cost: 400,
+        wallet_address: "0x7890abcdef1234567890abcdef1234567890abcd",
       },
       {
         id: 4,
         name: "Emily Rodriguez",
         role: "Project Manager",
-        dailyCost: 550,
-        walletAddress: "0xdef1234567890abcdef1234567890abcdef123456",
+        daily_cost: 550,
+        wallet_address: "0xdef1234567890abcdef1234567890abcdef123456",
       },
     ];
 
@@ -422,19 +610,19 @@ const BudgetBreakdown: FC = () => {
                           </span>
                           <p className="font-medium">
                             $
-                            {member.dailyCost.toLocaleString("en-US", {
+                            {member.daily_cost.toLocaleString("en-US", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}
                           </p>
                         </div>
-                        {member.walletAddress && (
+                        {member.wallet_address && (
                           <div>
                             <span className="text-sm text-muted-foreground">
                               Wallet Address:
                             </span>
                             <p className="font-medium truncate">
-                              {member.walletAddress}
+                              {member.wallet_address}
                             </p>
                           </div>
                         )}
@@ -470,7 +658,7 @@ const BudgetBreakdown: FC = () => {
                           </span>
                           <p className="font-medium">
                             $
-                            {service.monthlyCost.toLocaleString("en-US", {
+                            {service.monthly_cost.toLocaleString("en-US", {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                             })}

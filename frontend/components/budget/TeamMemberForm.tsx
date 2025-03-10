@@ -4,14 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
 import { Form, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-
-export interface TeamMember {
-  id: number;
-  name: string;
-  role: string;
-  dailyCost: number;
-  walletAddress?: string;
-}
+import { TeamMember } from "./BudgetBreakdown";
 
 interface TeamMemberFormProps {
   teamMembers: TeamMember[];
@@ -35,8 +28,8 @@ const TeamMemberForm: FC<TeamMemberFormProps> = ({ teamMembers, onChange }) => {
       id: generateId(),
       name: "",
       role: "",
-      dailyCost: 0,
-      walletAddress: "",
+      daily_cost: 0,
+      wallet_address: null,
     };
     onChange([...teamMembers, newMember]);
   };
@@ -51,7 +44,7 @@ const TeamMemberForm: FC<TeamMemberFormProps> = ({ teamMembers, onChange }) => {
   const updateTeamMember = (
     id: number,
     field: keyof TeamMember,
-    value: string | number
+    value: string | number | null
   ) => {
     const updatedMembers = teamMembers.map((member) => {
       if (member.id === id) {
@@ -118,11 +111,11 @@ const TeamMemberForm: FC<TeamMemberFormProps> = ({ teamMembers, onChange }) => {
                     <Input
                       id={`cost-${member.id}`}
                       type="number"
-                      value={member.dailyCost || ""}
+                      value={member.daily_cost || ""}
                       onChange={(e) =>
                         updateTeamMember(
                           member.id,
-                          "dailyCost",
+                          "daily_cost",
                           parseFloat(e.target.value) || 0
                         )
                       }
@@ -142,12 +135,12 @@ const TeamMemberForm: FC<TeamMemberFormProps> = ({ teamMembers, onChange }) => {
                       <FormControl>
                         <Input
                           id={`wallet-${member.id}`}
-                          value={member.walletAddress || ""}
+                          value={member.wallet_address || ""}
                           onChange={(e) =>
                             updateTeamMember(
                               member.id,
-                              "walletAddress",
-                              e.target.value
+                              "wallet_address",
+                              e.target.value || null
                             )
                           }
                           placeholder="0x..."
