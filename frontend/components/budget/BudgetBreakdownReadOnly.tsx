@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { TeamMember } from "./TeamMemberForm";
 import { ThirdPartyService } from "./ThirdPartyServiceForm";
 import { Milestone } from "./MilestoneForm";
+import BudgetDailyChart from "./BudgetDailyChart";
 
 interface BudgetBreakdownReadOnlyProps {
   // Optional props to allow passing data from parent component
@@ -578,6 +579,15 @@ const BudgetBreakdownReadOnly: FC<BudgetBreakdownReadOnlyProps> = ({
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Daily Budget Chart Section */}
+        <div className="border-t pt-6">
+          <BudgetDailyChart
+            teamMembers={teamMembers}
+            thirdPartyServices={thirdPartyServices}
+            milestones={milestones}
+          />
         </div>
       </CardContent>
     </Card>
