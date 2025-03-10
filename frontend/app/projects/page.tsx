@@ -21,10 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusCircle } from "lucide-react";
-import { Database } from "@/lib/supabase/types";
-
-// Define types based on Supabase generated types
-type ProjectRow = Database["public"]["Tables"]["projects"]["Row"];
+import { ProjectRow } from "@/lib/utils/types";
+import { formatDate, truncateText } from "@/lib/utils/formatting";
 
 const ProjectsPage: FC = () => {
   const router = useRouter();
@@ -66,22 +64,6 @@ const ProjectsPage: FC = () => {
 
   const handleRowClick = (projectId: string) => {
     router.push(`/projects/${projectId}`);
-  };
-
-  // Function to truncate text with ellipsis
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + "...";
-  };
-
-  // Format date to a more readable format
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   if (loading) {

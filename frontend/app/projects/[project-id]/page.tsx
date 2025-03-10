@@ -12,14 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
-import { Database } from "@/lib/supabase/types";
-
-// Types
-type ProjectRow = Database["public"]["Tables"]["projects"]["Row"];
-type SocialMediaLink = {
-  platform: string;
-  url: string;
-};
+import {
+  getPlatformDisplayName,
+  getPlatformIcon,
+  getSocialMediaLinks,
+} from "@/lib/utils/socialMedia";
+import { formatDate } from "@/lib/utils/formatting";
+import { ProjectRow } from "@/lib/utils/types";
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
@@ -62,40 +61,6 @@ const ProjectDetailPage: FC = () => {
 
     fetchProject();
   }, [projectId]);
-
-  const getPlatformDisplayName = (platform: string) => {
-    const platformMap: Record<string, string> = {
-      twitter: "Twitter",
-      discord: "Discord",
-      github: "GitHub",
-      telegram: "Telegram",
-      linkedin: "LinkedIn",
-      facebook: "Facebook",
-      instagram: "Instagram",
-      youtube: "YouTube",
-      medium: "Medium",
-      default: "Link",
-    };
-
-    return platformMap[platform.toLowerCase()] || platformMap.default;
-  };
-
-  const getPlatformIcon = (platform: string) => {
-    // This is a placeholder. In a real implementation, you would use actual icons
-    return platform.charAt(0).toUpperCase();
-  };
-
-  // Helper function to get social media links from project
-  const getSocialMediaLinks = (project: ProjectRow): SocialMediaLink[] => {
-    if (!project.social_media_links) return [];
-    return project.social_media_links as SocialMediaLink[];
-  };
-
-  // Format date to a more readable format
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString();
-  };
 
   if (loading) {
     return (

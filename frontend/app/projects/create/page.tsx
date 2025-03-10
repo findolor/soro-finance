@@ -41,25 +41,17 @@ import {
 } from "@/components/ui/form";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Database } from "@/lib/supabase/types";
+import {
+  SocialMediaLink,
+  PLATFORM_MAP,
+  getPlatformDisplayName,
+} from "@/lib/utils/socialMedia";
+import { ProjectInsert } from "@/lib/utils/types";
 
-// Define social media platforms
-const SOCIAL_MEDIA_PLATFORMS = [
-  { value: "twitter", label: "Twitter" },
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "facebook", label: "Facebook" },
-  { value: "instagram", label: "Instagram" },
-  { value: "github", label: "GitHub" },
-  { value: "discord", label: "Discord" },
-  { value: "telegram", label: "Telegram" },
-];
-
-// Types
-type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
-type SocialMediaLink = {
-  platform: string;
-  url: string;
-};
+// Define social media platforms for the dropdown
+const SOCIAL_MEDIA_PLATFORMS = Object.entries(PLATFORM_MAP)
+  .filter(([key]) => key !== "default")
+  .map(([value, label]) => ({ value, label }));
 
 // Form values type
 type FormValues = {
@@ -153,14 +145,6 @@ const CreateProjectPage: FC = () => {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  // Get platform display name
-  const getPlatformDisplayName = (platform: string) => {
-    return (
-      SOCIAL_MEDIA_PLATFORMS.find((p) => p.value === platform)?.label ||
-      platform
-    );
   };
 
   return (
