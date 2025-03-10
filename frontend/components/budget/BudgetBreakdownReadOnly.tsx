@@ -8,6 +8,7 @@ import { TeamMember } from "./TeamMemberForm";
 import { ThirdPartyService } from "./ThirdPartyServiceForm";
 import { Milestone } from "./MilestoneForm";
 import BudgetDailyChart from "./BudgetDailyChart";
+import MilestonePieChart from "./MilestonePieChart";
 
 interface BudgetBreakdownReadOnlyProps {
   // Optional props to allow passing data from parent component
@@ -375,6 +376,14 @@ const BudgetBreakdownReadOnly: FC<BudgetBreakdownReadOnlyProps> = ({
               milestones.map((milestone) => {
                 // Calculate the cost for this milestone
                 const milestoneCost = calculateMilestoneCost(milestone);
+                const durationInDays =
+                  milestone.dateRange?.from && milestone.dateRange?.to
+                    ? Math.floor(
+                        (new Date(milestone.dateRange.to).getTime() -
+                          new Date(milestone.dateRange.from).getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      ) + 1
+                    : 0;
 
                 return (
                   <div
@@ -407,133 +416,156 @@ const BudgetBreakdownReadOnly: FC<BudgetBreakdownReadOnlyProps> = ({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-muted-foreground">
-                          Date Range:
-                        </span>
-                        <p className="font-medium">
-                          {milestone.dateRange?.from && milestone.dateRange?.to
-                            ? `${format(
-                                new Date(milestone.dateRange.from),
-                                "MMM d, yyyy"
-                              )} - ${format(
-                                new Date(milestone.dateRange.to),
-                                "MMM d, yyyy"
-                              )}`
-                            : "No date range specified"}
-                        </p>
-                      </div>
-
-                      <div>
-                        <span className="text-sm text-muted-foreground">
-                          Team Members:
-                        </span>
-                        {milestone.teamMemberIds.length > 0 ? (
-                          <ul className="list-disc list-inside">
-                            {milestone.teamMemberIds.map((id) => {
-                              const member = teamMembers.find(
-                                (m) => m.id === id
-                              );
-                              return member ? (
-                                <li key={id} className="font-medium">
-                                  {member.name || "Unnamed"} (
-                                  {member.role || "Unspecified"})
-                                </li>
-                              ) : null;
-                            })}
-                          </ul>
-                        ) : (
+                      <div className="space-y-4">
+                        <div>
+                          <span className="text-sm text-muted-foreground">
+                            Date Range:
+                          </span>
                           <p className="font-medium">
-                            No team members assigned
+                            {milestone.dateRange?.from &&
+                            milestone.dateRange?.to
+                              ? `${format(
+                                  new Date(milestone.dateRange.from),
+                                  "MMM d, yyyy"
+                                )} - ${format(
+                                  new Date(milestone.dateRange.to),
+                                  "MMM d, yyyy"
+                                )}`
+                              : "No date range specified"}
                           </p>
-                        )}
-                      </div>
-                    </div>
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-sm text-muted-foreground">
-                          Services:
-                        </span>
-                        {milestone.serviceIds.length > 0 ? (
-                          <ul className="list-disc list-inside">
-                            {milestone.serviceIds.map((id) => {
-                              const service = thirdPartyServices.find(
-                                (s) => s.id === id
-                              );
-                              return service ? (
-                                <li key={id} className="font-medium">
-                                  {service.name || "Unnamed"}
+                        <div>
+                          <span className="text-sm text-muted-foreground">
+                            Team Members:
+                          </span>
+                          {milestone.teamMemberIds.length > 0 ? (
+                            <ul className="list-disc list-inside">
+                              {milestone.teamMemberIds.map((id) => {
+                                const member = teamMembers.find(
+                                  (m) => m.id === id
+                                );
+                                return member ? (
+                                  <li key={id} className="font-medium">
+                                    {member.name || "Unnamed"} (
+                                    {member.role || "Unspecified"})
+                                  </li>
+                                ) : null;
+                              })}
+                            </ul>
+                          ) : (
+                            <p className="font-medium">
+                              No team members assigned
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <span className="text-sm text-muted-foreground">
+                            Services:
+                          </span>
+                          {milestone.serviceIds.length > 0 ? (
+                            <ul className="list-disc list-inside">
+                              {milestone.serviceIds.map((id) => {
+                                const service = thirdPartyServices.find(
+                                  (s) => s.id === id
+                                );
+                                return service ? (
+                                  <li key={id} className="font-medium">
+                                    {service.name || "Unnamed"}
+                                  </li>
+                                ) : null;
+                              })}
+                            </ul>
+                          ) : (
+                            <p className="font-medium">No services assigned</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <span className="text-sm text-muted-foreground">
+                            Deliverables:
+                          </span>
+                          {milestone.deliverables.length > 0 ? (
+                            <ul className="list-disc list-inside">
+                              {milestone.deliverables.map((deliverable) => (
+                                <li
+                                  key={deliverable.id}
+                                  className="font-medium"
+                                >
+                                  {deliverable.name || "Unnamed"}
+                                  {deliverable.description && (
+                                    <span className="font-normal text-sm ml-1">
+                                      - {deliverable.description}
+                                    </span>
+                                  )}
                                 </li>
-                              ) : null;
-                            })}
-                          </ul>
-                        ) : (
-                          <p className="font-medium">No services assigned</p>
-                        )}
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="font-medium">No deliverables added</p>
+                          )}
+                        </div>
                       </div>
 
-                      <div>
-                        <span className="text-sm text-muted-foreground">
-                          Deliverables:
-                        </span>
-                        {milestone.deliverables.length > 0 ? (
-                          <ul className="list-disc list-inside">
-                            {milestone.deliverables.map((deliverable) => (
-                              <li key={deliverable.id} className="font-medium">
-                                {deliverable.name || "Unnamed"}
-                                {deliverable.description && (
-                                  <span className="font-normal text-sm ml-1">
-                                    - {deliverable.description}
-                                  </span>
+                      <div className="flex flex-col justify-between">
+                        <MilestonePieChart
+                          teamMembers={teamMembers}
+                          services={thirdPartyServices}
+                          teamMemberIds={milestone.teamMemberIds}
+                          serviceIds={milestone.serviceIds}
+                          durationInDays={durationInDays}
+                        />
+
+                        {/* Milestone Cost Breakdown */}
+                        <div className="mt-3 pt-3 border-t">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <span className="text-sm text-muted-foreground">
+                                Team Cost:
+                              </span>
+                              <p className="font-medium">
+                                $
+                                {milestoneCost.teamCost.toLocaleString(
+                                  "en-US",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
                                 )}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="font-medium">No deliverables added</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Milestone Cost Breakdown */}
-                    <div className="mt-3 pt-3 border-t">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <span className="text-sm text-muted-foreground">
-                            Team Cost:
-                          </span>
-                          <p className="font-medium">
-                            $
-                            {milestoneCost.teamCost.toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-muted-foreground">
-                            Services Cost:
-                          </span>
-                          <p className="font-medium">
-                            $
-                            {milestoneCost.serviceCost.toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-muted-foreground">
-                            Total Milestone Cost:
-                          </span>
-                          <p className="font-medium">
-                            $
-                            {milestoneCost.totalCost.toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </p>
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-sm text-muted-foreground">
+                                Services Cost:
+                              </span>
+                              <p className="font-medium">
+                                $
+                                {milestoneCost.serviceCost.toLocaleString(
+                                  "en-US",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-sm text-muted-foreground">
+                                Total Milestone Cost:
+                              </span>
+                              <p className="font-medium">
+                                $
+                                {milestoneCost.totalCost.toLocaleString(
+                                  "en-US",
+                                  {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  }
+                                )}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

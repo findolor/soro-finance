@@ -146,17 +146,23 @@ const BudgetDailyChart: React.FC<BudgetDailyChartProps> = ({
     setChartData(chartDataArray);
   }, [milestones, teamMembers, thirdPartyServices]);
 
+  const formatCurrency = (value: number) =>
+    `$${value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
   const chartConfig = {
     costs: {
       label: "Daily Costs",
     },
     teamCost: {
       label: "Team Cost",
-      color: "hsl(var(--chart-1))",
+      color: "var(--color-chart-1)",
     },
     serviceCost: {
       label: "Service Cost",
-      color: "hsl(var(--chart-2))",
+      color: "var(--color-chart-2)",
     },
   } satisfies ChartConfig;
 
@@ -197,7 +203,7 @@ const BudgetDailyChart: React.FC<BudgetDailyChartProps> = ({
                   {chartConfig[chart].label}
                 </span>
                 <span className="text-lg font-bold leading-none sm:text-3xl">
-                  ${total[key as keyof typeof total].toLocaleString()}
+                  {formatCurrency(total[key as keyof typeof total])}
                 </span>
               </button>
             );
@@ -237,7 +243,7 @@ const BudgetDailyChart: React.FC<BudgetDailyChartProps> = ({
                 <ChartTooltipContent
                   className="w-[200px]"
                   nameKey="costs"
-                  labelFormatter={(value) => {
+                  labelFormatter={(value: string) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -247,7 +253,11 @@ const BudgetDailyChart: React.FC<BudgetDailyChartProps> = ({
                 />
               }
             />
-            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+            <Bar
+              dataKey={activeChart}
+              fill={chartConfig[activeChart].color}
+              name={chartConfig[activeChart].label}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
