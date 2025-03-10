@@ -148,11 +148,16 @@ const CreateProjectPage: FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gray-100 p-4">
-      <h1 className="text-4xl font-bold text-gray-800">Create Project</h1>
+    <div className="container mx-auto py-8 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Create Project</h1>
+        <Button variant="outline" onClick={() => router.push("/projects")}>
+          ← Back to Projects
+        </Button>
+      </div>
 
       {isConnected ? (
-        <Card className="w-full max-w-2xl">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Create New Project</CardTitle>
             <CardDescription>Connected wallet: {walletAddress}</CardDescription>
@@ -321,7 +326,7 @@ const CreateProjectPage: FC = () => {
           </Form>
         </Card>
       ) : (
-        <Card className="w-full max-w-md">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Wallet Connection Required</CardTitle>
             <CardDescription>
@@ -368,11 +373,16 @@ const CreateProjectPage: FC = () => {
             {form.getValues("scfLink") && (
               <div className="space-y-2">
                 <h4 className="font-medium">SCF Project Link</h4>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 break-words">
                   {form.getValues("scfLink")}
                 </p>
               </div>
             )}
+
+            <div className="space-y-2">
+              <h4 className="font-medium">Wallet Address</h4>
+              <p className="text-sm text-gray-500 break-all">{walletAddress}</p>
+            </div>
 
             <div className="space-y-2">
               <h4 className="font-medium">Social Media Profiles</h4>
@@ -384,7 +394,7 @@ const CreateProjectPage: FC = () => {
                     .getValues("socialMediaLinks")
                     .filter((link) => link.url.trim() !== "")
                     .map((link, index) => (
-                      <li key={index}>
+                      <li key={index} className="break-words">
                         {getPlatformDisplayName(link.platform)}: {link.url}
                       </li>
                     ))}
@@ -396,7 +406,9 @@ const CreateProjectPage: FC = () => {
 
             <div className="space-y-2">
               <h4 className="font-medium">Email</h4>
-              <p className="text-sm text-gray-500">{form.getValues("email")}</p>
+              <p className="text-sm text-gray-500 break-words">
+                {form.getValues("email")}
+              </p>
             </div>
           </div>
 
