@@ -181,58 +181,56 @@ const ProjectDetailPage: FC = () => {
         )}
       </Header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>About the Project</CardTitle>
-            </CardHeader>
-            <CardContent>
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Project Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-2">About</h3>
               <p className="whitespace-pre-line">{project.description}</p>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
 
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium mb-1">Email</h3>
-                <a
-                  href={`mailto:${project.email}`}
-                  className="text-primary hover:underline"
-                >
-                  {project.email}
-                </a>
-              </div>
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-medium mb-3">Contact Details</h3>
 
-              {socialMediaLinks.length > 0 && (
+              <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium mb-2">Social Media</h3>
-                  <div className="space-y-2">
-                    {socialMediaLinks.map((link, index) => (
-                      <a
-                        key={index}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-primary hover:underline"
-                      >
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs">
-                          {getPlatformIcon(link.platform)}
-                        </div>
-                        {getPlatformDisplayName(link.platform)}
-                      </a>
-                    ))}
-                  </div>
+                  <h4 className="text-sm font-medium mb-1">Email</h4>
+                  <a
+                    href={`mailto:${project.email}`}
+                    className="text-primary hover:underline"
+                  >
+                    {project.email}
+                  </a>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+
+                {socialMediaLinks.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Social Media</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {socialMediaLinks.map((link, index) => (
+                        <a
+                          key={index}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-primary hover:underline bg-primary/5 px-3 py-1.5 rounded-md"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs">
+                            {getPlatformIcon(link.platform)}
+                          </div>
+                          {getPlatformDisplayName(link.platform)}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
