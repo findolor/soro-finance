@@ -15,57 +15,7 @@ import { ProjectRow } from "@/lib/utils/types";
 import { ExternalLink } from "lucide-react";
 import Header from "@/components/ui/header";
 import { toast } from "sonner";
-
-// Project resources
-const PROJECT_RESOURCES = {
-  teamMembers: [
-    {
-      id: 0,
-      name: "John Doe",
-      role: "Project Lead",
-      monthlyCost: 5000,
-      walletAddress: "0x1234...5678",
-    },
-    {
-      id: 1,
-      name: "Jane Smith",
-      role: "Researcher",
-      monthlyCost: 3500,
-      walletAddress: null,
-    },
-    {
-      id: 2,
-      name: "Alex Johnson",
-      role: "Frontend Developer",
-      monthlyCost: 4000,
-      walletAddress: "0x8765...4321",
-    },
-    {
-      id: 3,
-      name: "Sarah Williams",
-      role: "Backend Developer",
-      monthlyCost: 4200,
-      walletAddress: null,
-    },
-  ],
-  thirdPartyServices: [
-    {
-      id: 0,
-      name: "Market Research Tool",
-      monthlyCost: 500,
-    },
-    {
-      id: 1,
-      name: "Cloud Hosting",
-      monthlyCost: 300,
-    },
-    {
-      id: 2,
-      name: "CI/CD Pipeline",
-      monthlyCost: 200,
-    },
-  ],
-};
+import BudgetBreakdown from "@/components/budget/BudgetBreakdown";
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
@@ -231,6 +181,9 @@ const ProjectDetailPage: FC = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Budget Breakdown Section */}
+        <BudgetBreakdown />
       </div>
     </div>
   );
