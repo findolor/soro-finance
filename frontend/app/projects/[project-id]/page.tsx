@@ -19,6 +19,86 @@ import {
 } from "@/lib/utils/socialMedia";
 import { formatDate } from "@/lib/utils/formatting";
 import { ProjectRow } from "@/lib/utils/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+
+// Test data for milestones
+const TEST_MILESTONES = [
+  {
+    id: 1,
+    name: "Initial Research & Planning",
+    timeline: "May 2023 - June 2023",
+    development: "Research market needs and create project roadmap",
+    budget: {
+      teamMembers: [
+        {
+          name: "John Doe",
+          role: "Project Lead",
+          monthlyCost: 5000,
+          walletAddress: "0x1234...5678",
+        },
+        {
+          name: "Jane Smith",
+          role: "Researcher",
+          monthlyCost: 3500,
+          walletAddress: null,
+        },
+      ],
+      thirdPartyServices: [
+        {
+          name: "Market Research Tool",
+          monthlyCost: 500,
+        },
+      ],
+    },
+  },
+  {
+    id: 2,
+    name: "MVP Development",
+    timeline: "July 2023 - September 2023",
+    development: "Develop core features and initial prototype",
+    budget: {
+      teamMembers: [
+        {
+          name: "John Doe",
+          role: "Project Lead",
+          monthlyCost: 5000,
+          walletAddress: "0x1234...5678",
+        },
+        {
+          name: "Alex Johnson",
+          role: "Frontend Developer",
+          monthlyCost: 4000,
+          walletAddress: "0x8765...4321",
+        },
+        {
+          name: "Sarah Williams",
+          role: "Backend Developer",
+          monthlyCost: 4200,
+          walletAddress: null,
+        },
+      ],
+      thirdPartyServices: [
+        {
+          name: "Cloud Hosting",
+          monthlyCost: 300,
+        },
+        {
+          name: "CI/CD Pipeline",
+          monthlyCost: 200,
+        },
+      ],
+    },
+  },
+];
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
@@ -187,6 +267,139 @@ const ProjectDetailPage: FC = () => {
               )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Milestones Section */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Project Milestones</h2>
+
+        <div className="space-y-8">
+          {TEST_MILESTONES.map((milestone) => (
+            <Card key={milestone.id} className="overflow-hidden">
+              <CardHeader>
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">
+                      Milestone {milestone.id}
+                    </div>
+                    <CardTitle className="text-xl">{milestone.name}</CardTitle>
+                  </div>
+                  <Badge variant="outline" className="font-normal">
+                    {milestone.timeline}
+                  </Badge>
+                </div>
+              </CardHeader>
+
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  {/* General Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">
+                      General Information
+                    </h3>
+                    <p>{milestone.development}</p>
+                  </div>
+
+                  <Separator />
+
+                  {/* Budget Breakdown */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">
+                      Budget Breakdown
+                    </h3>
+
+                    {/* Team Members */}
+                    <div className="mb-6">
+                      <h4 className="text-md font-medium mb-3">Team Members</h4>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Monthly Cost</TableHead>
+                            <TableHead>Wallet Address</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {milestone.budget.teamMembers.map((member, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium">
+                                {member.name}
+                              </TableCell>
+                              <TableCell>{member.role}</TableCell>
+                              <TableCell>
+                                ${member.monthlyCost.toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                {member.walletAddress ? (
+                                  <span className="text-xs font-mono">
+                                    {member.walletAddress}
+                                  </span>
+                                ) : (
+                                  <span className="text-muted-foreground text-sm">
+                                    Not provided
+                                  </span>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Third Party Services */}
+                    {milestone.budget.thirdPartyServices.length > 0 && (
+                      <div>
+                        <h4 className="text-md font-medium mb-3">
+                          3rd Party Services
+                        </h4>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Service</TableHead>
+                              <TableHead>Monthly Cost</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {milestone.budget.thirdPartyServices.map(
+                              (service, index) => (
+                                <TableRow key={index}>
+                                  <TableCell className="font-medium">
+                                    {service.name}
+                                  </TableCell>
+                                  <TableCell>
+                                    ${service.monthlyCost.toLocaleString()}
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+
+                    {/* Total Monthly Cost */}
+                    <div className="mt-4 text-right">
+                      <p className="font-semibold">
+                        Total Monthly Cost: $
+                        {(
+                          milestone.budget.teamMembers.reduce(
+                            (sum, member) => sum + member.monthlyCost,
+                            0
+                          ) +
+                          milestone.budget.thirdPartyServices.reduce(
+                            (sum, service) => sum + service.monthlyCost,
+                            0
+                          )
+                        ).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
