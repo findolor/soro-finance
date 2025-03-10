@@ -49,7 +49,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body>
         <main>{children}</main>
         <Toaster />

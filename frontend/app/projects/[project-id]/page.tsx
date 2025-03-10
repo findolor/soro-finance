@@ -216,12 +216,8 @@ const ProjectDetailPage: FC = () => {
   const socialMediaLinks = getSocialMediaLinks(project);
 
   return (
-    <div className="w-full py-8">
-      <Header
-        title={project.name}
-        showBackButton={true}
-        backButtonUrl="/projects"
-      >
+    <div className="w-full">
+      <Header title={project.name}>
         {project.scf_link && (
           <Button
             variant="outline"

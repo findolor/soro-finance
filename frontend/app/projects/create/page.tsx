@@ -150,12 +150,8 @@ const CreateProjectPage: FC = () => {
   };
 
   return (
-    <div className="w-full py-8">
-      <Header
-        title="Create Project"
-        showBackButton={true}
-        backButtonUrl="/projects"
-      >
+    <div className="w-full">
+      <Header title="Create Project">
         {/* Additional buttons can be added here if needed */}
       </Header>
 

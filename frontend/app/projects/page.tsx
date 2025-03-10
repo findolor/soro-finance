@@ -20,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusCircle } from "lucide-react";
 import { ProjectRow } from "@/lib/utils/types";
 import { formatDate, truncateText } from "@/lib/utils/formatting";
 import Header from "@/components/ui/header";
@@ -91,13 +90,8 @@ const ProjectsPage: FC = () => {
   }
 
   return (
-    <div className="w-full py-8">
-      <Header title="Projects">
-        <Button onClick={handleCreateProject}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create Project
-        </Button>
-      </Header>
+    <div className="w-full">
+      <Header title="Projects" />
 
       <Card>
         <CardHeader>
