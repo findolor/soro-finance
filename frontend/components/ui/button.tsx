@@ -1,121 +1,58 @@
-import clsx from "clsx"
-import React, { ButtonHTMLAttributes } from "react"
-import Text from "@/components/ui/text"
-import { formatAddress } from "@/lib/utils/formatAddress"
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
 
-export type ButtonVariant = 'connect' | 'address' | 'disconnect' | 'custom'
+import { cn } from "@/lib/utils"
 
-export type ButtonSize = 'sm' | 'md' | 'lg'
-
-export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
-  text: string
-  onClick?: () => void
-  variant?: ButtonVariant
-  bgColor?: string
-  size?: ButtonSize
-  disabled?: boolean
-}
-
-const variantToColor: Record<Exclude<ButtonVariant, 'custom'>, string> = {
-  connect: '#FFDC93',
-  address: '#93B8FF',
-  disconnect: '#FF9E9E',
-}
-
-const sizeToClass: Record<ButtonSize, string> = {
-  sm: 'py-1 px-2 text-xs',
-  md: 'py-2 px-4 text-sm',
-  lg: 'py-3 px-6 text-base',
-}
-
-export const Button: React.FC<ButtonProps> = ({
-  text,
-  onClick,
-  variant = 'custom',
-  bgColor,
-  size = 'md',
-  disabled = false,
-  className,
-  ...rest
-}) => {
-  const bgColorClass = variant === 'custom' 
-    ? '' 
-    : variantToColor[variant]
-  
-  const sizeClass = sizeToClass[size]
-  
-  return (
-    <button
-      className={clsx(
-        "flex justify-center items-center rounded-lg transition-colors cursor-pointer hover:brightness-95",
-        sizeClass,
-        bgColorClass,
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-      style={variant === 'custom' ? { backgroundColor: bgColor } : {}}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      {...rest}
-    >
-      <Text 
-        text={text} 
-        size="12" 
-        lineHeight="16" 
-        letterSpacing="0.2" 
-        bold 
-      />
-    </button>
-  )
-}
-
-export const ConnectWalletButton: React.FC<Omit<ButtonProps, 'text' | 'variant'>> = ({ 
-  onClick, 
-  ...rest 
-}) => {
-  return (
-    <Button 
-      text="Connect wallet" 
-      onClick={onClick} 
-      // variant="connect"
-      bgColor="#FFDC93"
-      {...rest}
-    />
-  )
-}
-
-export const AddressButton: React.FC<Omit<ButtonProps, 'text' | 'variant' | 'onClick'> & { 
-  address: string 
-}> = ({ 
-  address, 
-  ...rest 
-}) => {
-  const handleCopyAddress = () => {
-    navigator.clipboard.writeText(address)
-      .catch(err => console.error('Failed to copy address:', err))
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+        outline:
+          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        icon: "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
   }
+)
+
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const Comp = asChild ? Slot : "button"
 
   return (
-    <Button
-      text={formatAddress(address)}
-      onClick={handleCopyAddress}
-      // variant="address"
-      bgColor="#93B8FF"
-      title="Click to copy full address"
-      {...rest}
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
     />
   )
 }
 
-export const DisconnectWalletButton: React.FC<Omit<ButtonProps, 'text' | 'variant'>> = ({ 
-  onClick, 
-  ...rest 
-}) => (
-  <Button 
-    text="Disconnect" 
-    onClick={onClick} 
-    // variant="disconnect"
-    bgColor="#FF9E9E"
-    {...rest}
-  />
-)
+export { Button, buttonVariants }
