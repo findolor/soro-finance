@@ -48,6 +48,7 @@ import {
 } from "@/lib/utils/socialMedia";
 import { ProjectInsert } from "@/lib/utils/types";
 import Header from "@/components/ui/header";
+import { toast } from "sonner";
 
 // Define social media platforms for the dropdown
 const SOCIAL_MEDIA_PLATFORMS = Object.entries(PLATFORM_MAP)
@@ -143,8 +144,8 @@ const CreateProjectPage: FC = () => {
       setShowReviewDialog(false);
 
       router.push(`/projects/${data.id}`);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.error("Failed to create project");
     }
   };
 

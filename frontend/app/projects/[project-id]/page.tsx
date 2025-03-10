@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import EmptyMilestones from "@/components/projects/EmptyMilestones";
 import Header from "@/components/ui/header";
+import { toast } from "sonner";
 
 // Test data for milestones
 const TEST_MILESTONES = [
@@ -98,12 +99,10 @@ const TEST_MILESTONES = [
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
-  const router = useRouter();
   const projectId = params["project-id"] as string;
 
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [milestones, setMilestones] = useState<typeof TEST_MILESTONES>([]);
   const [refreshMilestones, setRefreshMilestones] = useState(0);
 
@@ -135,17 +134,15 @@ const ProjectDetailPage: FC = () => {
         if (error) {
           throw error;
         }
-
         if (!data) {
-          throw new Error("Project not found");
+          throw new Error();
         }
 
         setProject(data);
         setLoading(false);
-      } catch (err) {
-        setError("Failed to load project details");
+      } catch {
+        toast.error("Failed to load project details");
         setLoading(false);
-        console.error(err);
       }
     };
 
@@ -163,8 +160,8 @@ const ProjectDetailPage: FC = () => {
 
         // Start with empty state by default
         setMilestones([]);
-      } catch (err) {
-        console.error("Error loading milestones:", err);
+      } catch {
+        toast.error("Failed to load milestones");
       }
     };
 
@@ -202,7 +199,7 @@ const ProjectDetailPage: FC = () => {
     );
   }
 
-  if (error || !project) {
+  if (!project) {
     return (
       <div className="w-full py-8">
         <Header
@@ -212,14 +209,6 @@ const ProjectDetailPage: FC = () => {
         >
           {/* Additional buttons can be added here if needed */}
         </Header>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-red-500 mb-4">{error || "Project not found"}</p>
-            <Button onClick={() => router.push("/projects")}>
-              Back to Projects
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     );
   }

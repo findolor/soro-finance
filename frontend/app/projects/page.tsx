@@ -49,10 +49,9 @@ const ProjectsPage: FC = () => {
 
         setProjects(data || []);
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError("Failed to load projects");
         setLoading(false);
-        console.error(err);
       }
     };
 
