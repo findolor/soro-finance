@@ -12,90 +12,60 @@ import {
   getSocialMediaLinks,
 } from "@/lib/utils/socialMedia";
 import { ProjectRow } from "@/lib/utils/types";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
-import EmptyMilestones from "@/components/projects/EmptyMilestones";
 import Header from "@/components/ui/header";
 import { toast } from "sonner";
 
-// Test data for milestones
-const TEST_MILESTONES = [
-  {
-    id: 1,
-    name: "Initial Research & Planning",
-    timeline: "May 2023 - June 2023",
-    development: "Research market needs and create project roadmap",
-    budget: {
-      teamMembers: [
-        {
-          name: "John Doe",
-          role: "Project Lead",
-          monthlyCost: 5000,
-          walletAddress: "0x1234...5678",
-        },
-        {
-          name: "Jane Smith",
-          role: "Researcher",
-          monthlyCost: 3500,
-          walletAddress: null,
-        },
-      ],
-      thirdPartyServices: [
-        {
-          name: "Market Research Tool",
-          monthlyCost: 500,
-        },
-      ],
+// Project resources
+const PROJECT_RESOURCES = {
+  teamMembers: [
+    {
+      id: 0,
+      name: "John Doe",
+      role: "Project Lead",
+      monthlyCost: 5000,
+      walletAddress: "0x1234...5678",
     },
-  },
-  {
-    id: 2,
-    name: "MVP Development",
-    timeline: "July 2023 - September 2023",
-    development: "Develop core features and initial prototype",
-    budget: {
-      teamMembers: [
-        {
-          name: "John Doe",
-          role: "Project Lead",
-          monthlyCost: 5000,
-          walletAddress: "0x1234...5678",
-        },
-        {
-          name: "Alex Johnson",
-          role: "Frontend Developer",
-          monthlyCost: 4000,
-          walletAddress: "0x8765...4321",
-        },
-        {
-          name: "Sarah Williams",
-          role: "Backend Developer",
-          monthlyCost: 4200,
-          walletAddress: null,
-        },
-      ],
-      thirdPartyServices: [
-        {
-          name: "Cloud Hosting",
-          monthlyCost: 300,
-        },
-        {
-          name: "CI/CD Pipeline",
-          monthlyCost: 200,
-        },
-      ],
+    {
+      id: 1,
+      name: "Jane Smith",
+      role: "Researcher",
+      monthlyCost: 3500,
+      walletAddress: null,
     },
-  },
-];
+    {
+      id: 2,
+      name: "Alex Johnson",
+      role: "Frontend Developer",
+      monthlyCost: 4000,
+      walletAddress: "0x8765...4321",
+    },
+    {
+      id: 3,
+      name: "Sarah Williams",
+      role: "Backend Developer",
+      monthlyCost: 4200,
+      walletAddress: null,
+    },
+  ],
+  thirdPartyServices: [
+    {
+      id: 0,
+      name: "Market Research Tool",
+      monthlyCost: 500,
+    },
+    {
+      id: 1,
+      name: "Cloud Hosting",
+      monthlyCost: 300,
+    },
+    {
+      id: 2,
+      name: "CI/CD Pipeline",
+      monthlyCost: 200,
+    },
+  ],
+};
 
 const ProjectDetailPage: FC = () => {
   const params = useParams();
@@ -103,20 +73,6 @@ const ProjectDetailPage: FC = () => {
 
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
-  const [milestones, setMilestones] = useState<typeof TEST_MILESTONES>([]);
-  const [refreshMilestones, setRefreshMilestones] = useState(0);
-
-  // For debugging purposes
-  console.log("Available test milestones:", TEST_MILESTONES.length);
-
-  // Function to toggle between test data and empty state for development purposes
-  const toggleTestData = () => {
-    if (milestones.length === 0) {
-      setMilestones(TEST_MILESTONES);
-    } else {
-      setMilestones([]);
-    }
-  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -157,21 +113,13 @@ const ProjectDetailPage: FC = () => {
       try {
         // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Start with empty state by default
-        setMilestones([]);
       } catch {
         toast.error("Failed to load milestones");
       }
     };
 
     loadMilestones();
-  }, [projectId, refreshMilestones]);
-
-  const handleMilestoneCreated = () => {
-    // Trigger a refresh of milestones
-    setRefreshMilestones((prev) => prev + 1);
-  };
+  }, [projectId]);
 
   if (loading) {
     return (
@@ -285,262 +233,6 @@ const ProjectDetailPage: FC = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      {/* Milestones Section */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Project Milestones</h2>
-
-          {/* Development-only toggle button */}
-          {process.env.NODE_ENV === "development" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleTestData}
-              className="text-xs"
-            >
-              Toggle Test Data
-            </Button>
-          )}
-        </div>
-
-        {milestones.length > 0 ? (
-          <>
-            {/* Total Project Budget Summary - Moved to top */}
-            <Card className="mb-8 border-2 border-primary/20">
-              <CardHeader>
-                <CardTitle>Total Project Budget</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Calculate total duration */}
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">Total Timeline:</span>
-                    <span>
-                      {milestones[0]?.timeline.split(" - ")[0]} -{" "}
-                      {
-                        milestones[milestones.length - 1]?.timeline.split(
-                          " - "
-                        )[1]
-                      }
-                    </span>
-                  </div>
-
-                  {/* Calculate total team members cost */}
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">
-                      Total Team Members Cost:
-                    </span>
-                    <span className="font-semibold">
-                      $
-                      {milestones
-                        .reduce(
-                          (total, milestone) =>
-                            total +
-                            milestone.budget.teamMembers.reduce(
-                              (sum, member) => sum + member.monthlyCost,
-                              0
-                            ),
-                          0
-                        )
-                        .toLocaleString()}
-                    </span>
-                  </div>
-
-                  {/* Calculate total third-party services cost */}
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">
-                      Total 3rd Party Services Cost:
-                    </span>
-                    <span className="font-semibold">
-                      $
-                      {milestones
-                        .reduce(
-                          (total, milestone) =>
-                            total +
-                            milestone.budget.thirdPartyServices.reduce(
-                              (sum, service) => sum + service.monthlyCost,
-                              0
-                            ),
-                          0
-                        )
-                        .toLocaleString()}
-                    </span>
-                  </div>
-
-                  <Separator />
-
-                  {/* Calculate grand total */}
-                  <div className="flex justify-between items-center text-lg">
-                    <span className="font-bold">Grand Total:</span>
-                    <span className="font-bold text-primary">
-                      $
-                      {milestones
-                        .reduce(
-                          (total, milestone) =>
-                            total +
-                            milestone.budget.teamMembers.reduce(
-                              (sum, member) => sum + member.monthlyCost,
-                              0
-                            ) +
-                            milestone.budget.thirdPartyServices.reduce(
-                              (sum, service) => sum + service.monthlyCost,
-                              0
-                            ),
-                          0
-                        )
-                        .toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="text-sm text-muted-foreground mt-2">
-                    <p>* Monthly costs aggregated across all milestones</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-8">
-              {milestones.map((milestone) => (
-                <Card key={milestone.id} className="overflow-hidden">
-                  <CardHeader>
-                    <div className="flex justify-between items-center flex-wrap gap-2">
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">
-                          Milestone {milestone.id}
-                        </div>
-                        <CardTitle className="text-xl">
-                          {milestone.name}
-                        </CardTitle>
-                      </div>
-                      <Badge variant="outline" className="font-normal">
-                        {milestone.timeline}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="pt-6">
-                    <div className="space-y-6">
-                      {/* General Information */}
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          General Information
-                        </h3>
-                        <p>{milestone.development}</p>
-                      </div>
-
-                      <Separator />
-
-                      {/* Budget Breakdown */}
-                      <div>
-                        <h3 className="text-lg font-semibold mb-4">
-                          Budget Breakdown
-                        </h3>
-
-                        {/* Team Members */}
-                        <div className="mb-6">
-                          <h4 className="text-md font-medium mb-3">
-                            Team Members
-                          </h4>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Monthly Cost</TableHead>
-                                <TableHead>Wallet Address</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {milestone.budget.teamMembers.map(
-                                (member, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell className="font-medium">
-                                      {member.name}
-                                    </TableCell>
-                                    <TableCell>{member.role}</TableCell>
-                                    <TableCell>
-                                      ${member.monthlyCost.toLocaleString()}
-                                    </TableCell>
-                                    <TableCell>
-                                      {member.walletAddress ? (
-                                        <span className="text-xs font-mono">
-                                          {member.walletAddress}
-                                        </span>
-                                      ) : (
-                                        <span className="text-muted-foreground text-sm">
-                                          Not provided
-                                        </span>
-                                      )}
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              )}
-                            </TableBody>
-                          </Table>
-                        </div>
-
-                        {/* Third Party Services */}
-                        {milestone.budget.thirdPartyServices.length > 0 && (
-                          <div>
-                            <h4 className="text-md font-medium mb-3">
-                              3rd Party Services
-                            </h4>
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>Service</TableHead>
-                                  <TableHead>Monthly Cost</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {milestone.budget.thirdPartyServices.map(
-                                  (service, index) => (
-                                    <TableRow key={index}>
-                                      <TableCell className="font-medium">
-                                        {service.name}
-                                      </TableCell>
-                                      <TableCell>
-                                        ${service.monthlyCost.toLocaleString()}
-                                      </TableCell>
-                                    </TableRow>
-                                  )
-                                )}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-
-                        {/* Total Monthly Cost */}
-                        <div className="mt-4 text-right">
-                          <p className="font-semibold">
-                            Total Monthly Cost: $
-                            {(
-                              milestone.budget.teamMembers.reduce(
-                                (sum, member) => sum + member.monthlyCost,
-                                0
-                              ) +
-                              milestone.budget.thirdPartyServices.reduce(
-                                (sum, service) => sum + service.monthlyCost,
-                                0
-                              )
-                            ).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </>
-        ) : (
-          <EmptyMilestones
-            projectId={projectId}
-            onMilestoneCreated={handleMilestoneCreated}
-          />
-        )}
       </div>
     </div>
   );
